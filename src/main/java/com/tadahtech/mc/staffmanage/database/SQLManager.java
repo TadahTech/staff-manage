@@ -1,6 +1,6 @@
 package com.tadahtech.mc.staffmanage.database;
 
-import com.tadahtech.mc.staffmanage.StaffManage;
+import com.tadahtech.mc.staffmanage.StaffManager;
 import com.tadahtech.mc.staffmanage.util.UtilConcurrency;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -22,7 +22,7 @@ public abstract class SQLManager {
     }
 
     public SQLManager(boolean createTable) {
-        SQLConfig sqlConfig = StaffManage.getInstance().getSqlConfig();
+        SQLConfig sqlConfig = StaffManager.getInstance().getSqlConfig();
         String host = sqlConfig.getHost();
         int port = sqlConfig.getPort();
         String database = sqlConfig.getDatabase();

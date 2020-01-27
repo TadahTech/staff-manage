@@ -1,7 +1,7 @@
 package com.tadahtech.mc.staffmanage.database;
 
 import com.google.common.collect.Lists;
-import com.tadahtech.mc.staffmanage.StaffManage;
+import com.tadahtech.mc.staffmanage.StaffManager;
 import com.tadahtech.mc.staffmanage.database.ColumnType.ColumnAttribute;
 
 import java.lang.reflect.Field;
@@ -187,7 +187,7 @@ public class GenericSQLManager<T extends Savable> extends SQLManager {
     public int getNextAutoIncrement() {
         try (Connection connection = this.getConnection()) {
             PreparedStatement statement = connection.prepareStatement("SELECT `AUTO_INCREMENT` FROM INFORMATION_SCHEMA.TABLES " +
-              "WHERE TABLE_SCHEMA='" + StaffManage.getInstance().getSqlConfig().getDatabase() + "' AND TABLE_NAME='" + this.tableName + "';");
+              "WHERE TABLE_SCHEMA='" + StaffManager.getInstance().getSqlConfig().getDatabase() + "' AND TABLE_NAME='" + this.tableName + "';");
 
             ResultSet resultSet = statement.executeQuery();
             return (resultSet == null || !resultSet.next()) ? 1 : (resultSet.getInt(1) + 1);

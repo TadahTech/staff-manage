@@ -2,7 +2,7 @@ package com.tadahtech.mc.staffmanage.commands;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.tadahtech.mc.staffmanage.StaffManage;
+import com.tadahtech.mc.staffmanage.StaffManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -15,7 +15,7 @@ public class CommandManager implements Listener {
 
     private static final Map<String, SubCommand> COMMAND_MAP = Maps.newHashMap();
 
-    public CommandManager(StaffManage plugin) {
+    public CommandManager(StaffManager plugin) {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
@@ -25,7 +25,7 @@ public class CommandManager implements Listener {
         String command;
         List<String> args = Lists.newArrayList();
 
-        if(message.contains(" ")) {
+        if (message.contains(" ")) {
             String[] split = message.split(" ");
             command = split[0];
             String[] rest = new String[split.length - 2];
@@ -39,7 +39,7 @@ public class CommandManager implements Listener {
 
         SubCommand subCommand = COMMAND_MAP.get(command);
 
-        if(subCommand == null) {
+        if (subCommand == null) {
             return;
         }
 
@@ -47,4 +47,7 @@ public class CommandManager implements Listener {
         event.setCancelled(true);
     }
 
+    public void register(SubCommand command) {
+        COMMAND_MAP.put(command.getName(), command);
+    }
 }

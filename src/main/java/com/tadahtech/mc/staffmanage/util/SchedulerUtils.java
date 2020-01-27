@@ -1,6 +1,6 @@
 package com.tadahtech.mc.staffmanage.util;
 
-import com.tadahtech.mc.staffmanage.StaffManage;
+import com.tadahtech.mc.staffmanage.StaffManager;
 import com.tadahtech.mc.staffmanage.database.Callback;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -13,11 +13,11 @@ import java.util.concurrent.Callable;
 public class SchedulerUtils {
 
     public static void runLater(long delay, Runnable runnable) {
-        Bukkit.getScheduler().runTaskLater(StaffManage.getInstance(), runnable, delay);
+        Bukkit.getScheduler().runTaskLater(StaffManager.getInstance(), runnable, delay);
     }
 
     public static void runLaterAsync(long delay, Runnable runnable) {
-        Bukkit.getScheduler().runTaskLaterAsynchronously(StaffManage.getInstance(), runnable, delay);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(StaffManager.getInstance(), runnable, delay);
     }
 
     public static void runAtInterval(long interval, Runnable... tasks) {
@@ -38,7 +38,7 @@ public class SchedulerUtils {
                 tasks[index].run();
                 index++;
             }
-        }.runTaskTimer(StaffManage.getInstance(), delay, interval);
+        }.runTaskTimer(StaffManager.getInstance(), delay, interval);
     }
 
     public static void repeat(int repetitions, long interval, Runnable task, Runnable onComplete) {
@@ -60,7 +60,7 @@ public class SchedulerUtils {
 
                 task.run();
             }
-        }.runTaskTimer(StaffManage.getInstance(), 0L, interval);
+        }.runTaskTimer(StaffManager.getInstance(), 0L, interval);
     }
 
     public static void repeatAsync(int repetitions, long interval, Runnable task, Runnable onComplete) {
@@ -82,7 +82,7 @@ public class SchedulerUtils {
 
                 task.run();
             }
-        }.runTaskTimerAsynchronously(StaffManage.getInstance(), 0L, interval);
+        }.runTaskTimerAsynchronously(StaffManager.getInstance(), 0L, interval);
     }
 
     public static void repeatWhile(long interval, Callable<Boolean> predicate, Runnable task, Runnable onComplete) {
@@ -105,7 +105,7 @@ public class SchedulerUtils {
                     e.printStackTrace();
                 }
             }
-        }.runTaskTimer(StaffManage.getInstance(), 0L, interval);
+        }.runTaskTimer(StaffManager.getInstance(), 0L, interval);
     }
 
     public static void repeatWhileAsync(long interval, Callable<Boolean> predicate, Runnable task, Runnable onComplete) {
@@ -128,7 +128,7 @@ public class SchedulerUtils {
                     e.printStackTrace();
                 }
             }
-        }.runTaskTimerAsynchronously(StaffManage.getInstance(), 0L, interval);
+        }.runTaskTimerAsynchronously(StaffManager.getInstance(), 0L, interval);
     }
 
     public interface Task {
@@ -234,7 +234,7 @@ public class SchedulerUtils {
                         e.printStackTrace();
                     }
                 }
-            }.runTaskTimer(StaffManage.getInstance(), 1L, 1L));
+            }.runTaskTimer(StaffManager.getInstance(), 1L, 1L));
             return this;
         }
 
@@ -253,7 +253,7 @@ public class SchedulerUtils {
                         e.printStackTrace();
                     }
                 }
-            }.runTaskTimer(StaffManage.getInstance(), 0L, 1L));
+            }.runTaskTimer(StaffManager.getInstance(), 0L, 1L));
             return this;
         }
 
@@ -284,7 +284,7 @@ public class SchedulerUtils {
                         e.printStackTrace();
                     }
                 }
-            }.runTaskTimer(StaffManage.getInstance(), 0L, 1L));
+            }.runTaskTimer(StaffManager.getInstance(), 0L, 1L));
             return this;
         }
 

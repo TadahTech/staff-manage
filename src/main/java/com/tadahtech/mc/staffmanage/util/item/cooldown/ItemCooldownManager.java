@@ -1,6 +1,6 @@
 package com.tadahtech.mc.staffmanage.util.item.cooldown;
 
-import com.tadahtech.mc.staffmanage.StaffManage;
+import com.tadahtech.mc.staffmanage.StaffManager;
 import com.tadahtech.mc.staffmanage.util.Colors;
 import com.tadahtech.mc.staffmanage.util.UtilAction;
 import com.tadahtech.mc.staffmanage.util.UtilTime;
@@ -26,7 +26,7 @@ public abstract class ItemCooldownManager implements Listener {
     private static final DecimalFormat FORMAT = new DecimalFormat("0.0");
 
     public ItemCooldownManager() {
-        StaffManage.getInstance().getServer().getPluginManager().registerEvents(this, StaffManage.getInstance());
+        StaffManager.getInstance().getServer().getPluginManager().registerEvents(this, StaffManager.getInstance());
     }
 
     public abstract ItemCooldownHolder getHolder(Player player);

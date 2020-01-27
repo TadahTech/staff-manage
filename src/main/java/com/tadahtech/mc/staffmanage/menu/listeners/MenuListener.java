@@ -1,11 +1,10 @@
 package com.tadahtech.mc.staffmanage.menu.listeners;
 
-import com.tadahtech.mc.staffmanage.StaffManage;
+import com.tadahtech.mc.staffmanage.listener.PunishmentListener;
 import com.tadahtech.mc.staffmanage.menu.Menu;
 import com.tadahtech.mc.staffmanage.menu.buttons.MenuButton;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -18,10 +17,10 @@ import org.bukkit.inventory.PlayerInventory;
 /**
  * Listener for the Menu system
  */
-public class MenuListener implements Listener {
+public class MenuListener implements PunishmentListener {
 
     public MenuListener() {
-        StaffManage.getInstance().getServer().getPluginManager().registerEvents(this, StaffManage.getInstance());
+        this.startListening();
     }
 
     @EventHandler

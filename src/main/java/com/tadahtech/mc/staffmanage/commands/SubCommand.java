@@ -10,8 +10,11 @@ import java.util.List;
 public interface SubCommand {
 
     String getName();
+
     String getDescription();
+
     String getUsage();
+
     String getPermission();
 
     default boolean isPlayerOnly() {
@@ -25,19 +28,19 @@ public interface SubCommand {
     }
 
     default void run(CommandSender sender, List<String> args) {
-        if(!isPlayerOnly() && !(sender instanceof Player)) {
+        if (!isPlayerOnly() && !(sender instanceof Player)) {
             sender.sendMessage(Colors.RED + "This command is for players only!");
             return;
         }
 
-        if(sender instanceof ConsoleCommandSender) {
+        if (sender instanceof ConsoleCommandSender) {
             execute(sender, args.toArray(new String[0]));
             return;
         }
 
         Player player = (Player) sender;
 
-        if(!canUse(player)) {
+        if (!canUse(player)) {
             player.sendMessage(Colors.RED + "You don't have permission to use this command.");
             return;
         }
