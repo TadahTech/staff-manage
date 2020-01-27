@@ -1,0 +1,6 @@
+name: StaffManage
+version: ${project.version}
+main: com.tadahtech.mc.staffmanage.StaffManage
+prefix: SMS
+authors: [TadahTech]
+description: A staff management and assistance plugin
