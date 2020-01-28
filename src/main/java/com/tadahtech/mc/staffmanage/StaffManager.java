@@ -7,12 +7,17 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.UUID;
+
 public final class StaffManager extends JavaPlugin {
+
+    public static final UUID CONSOLE_UUID = UUID.fromString("f78a4d8d-d51b-4b39-98a3-230f2de0c670");
 
     private static StaffManager instance;
     private SQLConfig sqlConfig;
     private CommandManager commandManager;
     private PunishmentManager punishmentManager;
+    private ConfigurationSection messagesSection;
 
     public static StaffManager getInstance() {
         return instance;
@@ -28,6 +33,8 @@ public final class StaffManager extends JavaPlugin {
             this.saveDefaultConfig();
             config = this.getConfig();
         }
+
+        this.messagesSection = config.getConfigurationSection("messages");
 
         loadSQL(config);
         this.punishmentManager = new PunishmentManager();
@@ -79,5 +86,9 @@ public final class StaffManager extends JavaPlugin {
 
     public PunishmentManager getPunishmentManager() {
         return punishmentManager;
+    }
+
+    public ConfigurationSection getMessagesSection() {
+        return messagesSection;
     }
 }

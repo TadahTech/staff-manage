@@ -4,8 +4,6 @@ import com.google.common.collect.Lists;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang.StringUtils;
@@ -27,29 +25,6 @@ public class UtilText {
     private static final int CENTER_PX = CHAT_WIDTH / 2;
     private static final String VOWELS = "aeiouAEIOU";
     private static final String CONSONANTS = "bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ";
-
-    public static ComponentBuilder getPrefix() {
-        return new ComponentBuilder("[").color(ChatColor.DARK_GRAY)
-          .append("Crazy").color(ChatColor.DARK_GREEN).bold(true)
-          .append("Wars").color(ChatColor.GREEN).bold(true)
-          .append("] ", FormatRetention.NONE).color(ChatColor.DARK_GRAY);
-    }
-
-    public static ComponentBuilder getPrefix(String prefixMain, String prefixSecond) {
-        return new ComponentBuilder("[").color(ChatColor.DARK_GRAY)
-          .append(prefixMain).color(ChatColor.DARK_GREEN).bold(true)
-          .append(prefixSecond).color(ChatColor.GREEN).bold(true)
-          .append("] ", FormatRetention.NONE).color(ChatColor.DARK_GRAY);
-    }
-
-    public static ComponentBuilder getServerName() {
-        return new ComponentBuilder("Crazy").color(ChatColor.DARK_GREEN).bold(true)
-          .append("Wars").color(ChatColor.GREEN).bold(true);
-    }
-
-    public static String addSuffix(int amount, String type, String suffix) {
-        return amount + " " + type + (amount == 1 ? "" : suffix);
-    }
 
     public static String splitLines(String string) {
         return splitLines(string, 30, null);

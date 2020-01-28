@@ -1,0 +1,32 @@
+sql:
+  host: localhost
+  user: root
+  password: hopefullyNotPassword
+  database: punishments
+  port: 3306
+
+chat-prefix: "&6&lHydra&f&l(Punishments) &e» &f"
+
+#Messages
+messages:
+  #This is the format to display all records for a player to a staff member
+  record-entry: "All records for the user %player%"
+  record-entry-each: "%type% on %date% by %by% for %reason% (%dateDiff% ago)"
+
+  ban:
+    message: "You were banned by %by% for %reason%."
+
+  tempban:
+    message: "You were banned by %by% for %reason%, until %until%"
+
+  mute:
+    message: "You have been muted by %by% for %reason%, until %until%"
+  
+  tempmute:
+    message: "You were banned by %by% for %reason%, until %until%"
+    
+  kick:
+    message: "You were kicked by %by% for %reason%%"
+  
+  warning:
+    message: "You have been warned by %by% for %reason%"

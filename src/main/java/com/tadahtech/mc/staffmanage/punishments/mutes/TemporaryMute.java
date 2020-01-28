@@ -1,5 +1,6 @@
 package com.tadahtech.mc.staffmanage.punishments.mutes;
 
+import com.tadahtech.mc.staffmanage.StaffManager;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentType;
 
 import java.util.Date;
@@ -54,6 +55,13 @@ public class TemporaryMute implements Mute {
     @Override
     public Date getTimestamp() {
         return this.timestamp;
+    }
+
+    @Override
+    public String getBaseMessage(String player) {
+        String base = StaffManager.getInstance().getMessagesSection().getString("messages.tempmute.message");
+        base = base.replace("%player%", player).replace("%reason%", getReason());
+        return base;
     }
 
 }

@@ -77,7 +77,7 @@ public interface Punishment {
     }
 
     default String getBaseMessage(String player) {
-        String base = StaffManager.getInstance().getPunishmentManager().getConfig().getString(getType().name().toLowerCase() + ".in-game-message");
+        String base = StaffManager.getInstance().getMessagesSection().getString(getType().name().toLowerCase() + ".message");
 
         base = base.replace("%player%", player).replace("%reason%", getReason());
         return base;

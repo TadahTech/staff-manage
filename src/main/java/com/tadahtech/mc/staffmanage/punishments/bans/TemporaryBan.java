@@ -1,5 +1,6 @@
 package com.tadahtech.mc.staffmanage.punishments.bans;
 
+import com.tadahtech.mc.staffmanage.StaffManager;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentType;
 import com.tadahtech.mc.staffmanage.util.UtilTime;
 import org.bukkit.ChatColor;
@@ -59,6 +60,13 @@ public class TemporaryBan implements Ban {
     @Override
     public Date getTimestamp() {
         return this.timestamp;
+    }
+
+    @Override
+    public String getBaseMessage(String player) {
+        String base = StaffManager.getInstance().getMessagesSection().getString("messages.tempban.message");
+        base = base.replace("%player%", player).replace("%reason%", getReason());
+        return base;
     }
 
     @Override

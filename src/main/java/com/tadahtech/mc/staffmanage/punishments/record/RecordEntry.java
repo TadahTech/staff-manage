@@ -1,12 +1,14 @@
 package com.tadahtech.mc.staffmanage.punishments.record;
 
+import com.tadahtech.mc.staffmanage.StaffManager;
 import com.tadahtech.mc.staffmanage.database.ColumnType;
 import com.tadahtech.mc.staffmanage.database.Savable;
 import com.tadahtech.mc.staffmanage.database.Saved;
 import com.tadahtech.mc.staffmanage.punishments.Punishment;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentType;
 import com.tadahtech.mc.staffmanage.util.Colors;
-import org.bukkit.Bukkit;
+import com.tadahtech.mc.staffmanage.util.UtilTime;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.Calendar;
@@ -21,6 +23,9 @@ public class RecordEntry implements Savable {
 
     @Saved(primaryKey = true, columnType = ColumnType.UUID)
     private UUID accountId;
+
+    @Saved(primaryKey = true, columnType = ColumnType.STRING)
+    private String accountName;
 
     @Saved(columnType = ColumnType.ENUM)
     private PunishmentType type;
@@ -47,8 +52,9 @@ public class RecordEntry implements Savable {
     public RecordEntry() {
     }
 
-    public RecordEntry(UUID accountId, Punishment punishment) {
+    public RecordEntry(UUID accountId, String accountName, Punishment punishment) {
         this.accountId = accountId;
+        this.accountName = accountName;
         this.type = punishment.getType();
         this.expiry = punishment.getExpiry();
         this.reason = punishment.getReason();
@@ -57,8 +63,9 @@ public class RecordEntry implements Savable {
         this.removed = false;
     }
 
-    public RecordEntry(UUID accountId, PunishmentType type, Date expiry, String reason, String initiator, UUID initiatorUUID, Date timestamp) {
+    public RecordEntry(UUID accountId, String accountName, PunishmentType type, Date expiry, String reason, String initiator, UUID initiatorUUID, Date timestamp) {
         this.accountId = accountId;
+        this.accountName = accountName;
         this.type = type;
         this.expiry = expiry;
         this.reason = reason;
@@ -112,8 +119,16 @@ public class RecordEntry implements Savable {
         this.removed = true;
     }
 
+    public String getAccountName() {
+        return accountName;
+    }
+
+    public void setAccountName(String accountName) {
+        this.accountName = accountName;
+    }
+
     public void print(Player player) {
-        Player initiator = Bukkit.getPlayer(this.getInitiator());
+        String initiator = this.getInitiator();
 
         Calendar startCalendar = new GregorianCalendar();
         startCalendar.setTime(this.getTimestamp());
@@ -131,14 +146,15 @@ public class RecordEntry implements Savable {
             color = Colors.RED;
         }
 
-//        Messaging.send(player,
-//          new RegularMessage(CrazyMessage.PUNISHMENTS_HISTORY_TIMESTAMP)
-//            .withArg((this.isRemoved() ? Colors.BOLD + Colors.DARK_RED + "REMOVED" : "") + color + UtilTime.format(this.getTimestamp()))
-//            .withArg(String.valueOf(this.getEntryId()), ColorFormatting.COUNT),
-//          new RegularMessage(CrazyMessage.PUNISHMENTS_HISTORY_TYPE).withArg(this.getType().getColor() + UtilText.format(this.getType().name())),
-//          this.getExpiry() == null ? null : new RegularMessage(CrazyMessage.PUNISHMENTS_HISTORY_LENGTH).withArg(UtilTime.toSentence(this.getLength()), ColorFormatting.ELEMENT),
-//          new RegularMessage(CrazyMessage.PUNISHMENTS_HISTORY_REASON).withArg(this.getReason(), ColorFormatting.ELEMENT),
-//          new RegularMessage(CrazyMessage.PUNISHMENTS_HISTORY_INITIATOR).withArg(initiator.getShownName(), ColorFormatting.NAME)
-        //);
+        String base = StaffManager.getInstance().getMessagesSection().getString("record-entry-each");
+        base = base.replace("%type%", getType().name())
+          .replace("%date%", UtilTime.format(getTimestamp()))
+          .replace("%by%", initiator)
+          .replace("%reason%", getReason())
+          .replace("%dateDiff%", color + UtilTime.formatTime(diffMonth) + (diffMonth == 1 ? "month" : "months"));
+
+        base = ChatColor.translateAlternateColorCodes('&', base);
+
+        player.sendMessage(base);
     }
 }

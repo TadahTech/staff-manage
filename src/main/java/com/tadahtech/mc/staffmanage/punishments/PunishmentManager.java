@@ -81,7 +81,7 @@ public class PunishmentManager {
         Bukkit.getServer().getLogger().info("New punishment applied to " + player.getName() + " (" + player.getUniqueId() + "); " + punishment.getClass().getSimpleName());
         Bukkit.getServer().getLogger().info(Common.GSON.toJson(punishment));
 
-        RecordEntry entry = new RecordEntry(player.getUniqueId(), punishment);
+        RecordEntry entry = new RecordEntry(player.getUniqueId(), player.getName(), punishment);
         this.getRecordSQLManager().saveEntry(entry);
 
         if (punishment.shouldPersist()) {
@@ -121,13 +121,9 @@ public class PunishmentManager {
                 return;
         }
 
-        RecordEntry entry = new RecordEntry(player.getUniqueId(), PunishmentType.REMOVE, null, reason, by.getName(), by.getUniqueId(), new Date());
+        RecordEntry entry = new RecordEntry(player.getUniqueId(), player.getName(), PunishmentType.REMOVE, null, reason, by.getName(), by.getUniqueId(), new Date());
 
         this.getRecordSQLManager().saveEntry(entry);
-    }
-
-    public FileConfiguration getConfig() {
-        return config;
     }
 
     public Mute getMute(Player player) {

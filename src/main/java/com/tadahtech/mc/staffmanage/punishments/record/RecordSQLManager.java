@@ -21,6 +21,21 @@ public class RecordSQLManager extends GenericSQLManager<RecordEntry> {
         this.save(entry);
     }
 
+    public void getRecord(String accountName, boolean includeRemoved, Callback<Record> recordCallback) {
+        if (!includeRemoved) {
+            this.getAllAsync(list -> {
+                Record record = new Record(accountName, list);
+                recordCallback.call(record);
+            }, this.createValue("accountName", accountName), this.createValue("removed", false));
+            return;
+        }
+
+        this.getAllAsync(list -> {
+            Record record = new Record(accountName, list);
+            recordCallback.call(record);
+        }, new SavedFieldValue<>(this.getField("accountName"), accountName));
+    }
+
     public void getRecord(UUID accountId, boolean includeRemoved, Callback<Record> recordCallback) {
         if (!includeRemoved) {
             this.getAllAsync(list -> {
