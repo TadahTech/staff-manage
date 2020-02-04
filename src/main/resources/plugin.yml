@@ -4,3 +4,6 @@ main: com.tadahtech.mc.staffmanage.StaffManage
 prefix: SMS
 authors: [TadahTech]
 description: A staff management and assistance plugin
+
+commands:
+  punish:

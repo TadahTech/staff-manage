@@ -7,26 +7,74 @@ sql:
 
 chat-prefix: "&6&lHydra&f&l(Punishments) &e» &f"
 
-#Messages
+categories:
+  chat:
+    icon: MATERIAL
+    gui-name: "Chat Offenses"
+    types:
+      spam:
+        icon: MATERIAL
+        gui-name: "Temp Mute"
+        allow-ban: true
+        allow-perm-mute: true
+        allow-ip-ban: false
+        lengths:
+          tempmute:
+          - "1h0m0s"
+          - "1h0m0s"
+          - "1h0m0s"
+          - "1h0m0s"
+          tempban:
+          - "1h0m0s"
+          - "1h0m0s"
+          - "1h0m0s"
+          - "1h0m0s"
+
 messages:
-  #This is the format to display all records for a player to a staff member
-  record-entry: "All records for the user %player%"
-  record-entry-each: "%type% on %date% by %by% for %reason% (%dateDiff% ago)"
+  staff: "You have %type% %player% for %category% - %subCat%"
+  ingame: "%player% has been %type% for %category% - %subCat%"
 
-  ban:
-    message: "You were banned by %by% for %reason%."
+  ban: "            &c&bPERMANENTLY BANNED\n
+              You have been banned from HydraCraft\n
+              Reason: %reason%\n\n
 
-  tempban:
-    message: "You were banned by %by% for %reason%, until %until%"
+              Purchase an unban at\n
+              https://store.hydracraft.net/category/1422152\n\n
 
-  mute:
-    message: "You have been muted by %by% for %reason%, until %until%"
+              Do you feel this was a mistake?\n
+              Appeal on the forums:\n
+              http://hydracraft.net/forums"
+
+  tempban: "        &c&bTEMPORARILY BANNED&r\n
+              You have been banned from HydraCraft\n
+              Reason: %reason%\n\n
+
+              Ban expires in: %timeRemaining%\n\n
+
+              Purchase an unban at\n
+              https://store.hydracraft.net/category/1422152\n\n
+
+              Do you feel this was a mistake?\n
+              Appeal on the forums:\n
+              http://hydracraft.net/forums"
   
-  tempmute:
-    message: "You were banned by %by% for %reason%, until %until%"
-    
-  kick:
-    message: "You were kicked by %by% for %reason%%"
+  mute: "###################################################\n
+                  You’ve been &c&bPERMANENTLY&r muted by %staff%\n
+                  Reason: Character Spam\n\n
+
+                  Get an unmute at\n
+                  https://store.hydracraft.net/category/1422152\n
+                  Contact support if you feel this was a mistake\n
+                  hydracraft.net/forums/appeals\n
+        ###################################################"
+
+  tempmute: "###################################################\n
+                 You’ve been muted for %time% by %staff%\n
+                 Reason: Character Spam\n\n
+
+                 Next Punishment: %next%\n
+             ###################################################"
+
+  kick: "You were kicked by %by% for %reason%%"
   
-  warning:
-    message: "You have been warned by %by% for %reason%"
+  warning: "You have been warned by %by% for %reason%"
