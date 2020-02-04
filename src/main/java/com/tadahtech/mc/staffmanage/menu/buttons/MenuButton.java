@@ -15,18 +15,6 @@ public abstract class MenuButton {
         this.itemStack = itemStack;
     }
 
-    protected static String itemize(String label, String value) {
-        return Colors.GRAY + label + ": " + Colors.ELEMENT + value;
-    }
-
-    protected static String itemize(String label, boolean value) {
-        return Colors.GRAY + label + ": " + (value ? (Colors.GREEN + "Yes") : (Colors.RED + "No"));
-    }
-
-    protected static String itemize(String label, int value) {
-        return Colors.GRAY + label + ": " + Colors.ELEMENT + value;
-    }
-
     protected static String lore(String str) {
         return Colors.LORE + str;
     }

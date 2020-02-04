@@ -1,8 +1,9 @@
 package com.tadahtech.mc.staffmanage.listener;
 
-import com.tadahtech.mc.staffmanage.punishments.PunishmentManager;
+import com.tadahtech.mc.staffmanage.PunishmentManager;
+import com.tadahtech.mc.staffmanage.mute.MuteManager;
+import com.tadahtech.mc.staffmanage.player.PlayerPunishmentData;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentType;
-import com.tadahtech.mc.staffmanage.punishments.mutes.Mute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -10,10 +11,12 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class MuteListener implements PunishmentListener {
 
-    private PunishmentManager manager;
+    private MuteManager muteManager;
+    private PunishmentManager punishmentManager;
 
-    public MuteListener(PunishmentManager manager) {
-        this.manager = manager;
+    public MuteListener(PunishmentManager punishmentManager) {
+        this.punishmentManager = punishmentManager;
+        this.muteManager = punishmentManager.getMuteManager();
 
         this.startListening();
     }
@@ -22,19 +25,21 @@ public class MuteListener implements PunishmentListener {
     public void onChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
 
-        Mute mute = this.manager.getMute(player);
+        PlayerPunishmentData mute = this.muteManager.getMute(player);
 
         if (mute == null) {
             return;
         }
 
         if (mute.isTemporary() && mute.isExpired()) {
-            this.manager.getSQLManager().deletePunishment(player.getUniqueId(), PunishmentType.MUTE);
-            this.manager.unmute(player);
+            this.punishmentManager.getSQLManager().deletePunishment(player.getUniqueId(), player.getName(), PunishmentType.MUTE);
+            this.muteManager.unmute(player);
             return;
         }
 
+        player.sendMessage(this.punishmentManager.getMessage(mute));
+
         event.setCancelled(true);
-        player.sendMessage(mute.getBaseMessage(player.getName()));
+
     }
 }

@@ -277,7 +277,7 @@ public enum ColumnType {
             JsonArray array = new JsonArray();
             Class[] classes = (Class[]) object;
             for (Class aClass : classes) {
-                array.add(new JsonPrimitive(aClass.getName().substring("net.crazywars.core.modules.cosmetics.types.".length())));
+                array.add(new JsonPrimitive(aClass.getName().substring("net.crazywars.core.modules.cosmetics.subCat.".length())));
             }
 
             String string = array.toString();
@@ -293,7 +293,7 @@ public enum ColumnType {
             Class[] classes = new Class[array.size()];
             for (int i = 0; i < classes.length; i++) {
                 try {
-                    classes[i] = Class.forName("net.crazywars.core.modules.cosmetics.types." + array.get(i).getAsString());
+                    classes[i] = Class.forName("net.crazywars.core.modules.cosmetics.subCat." + array.get(i).getAsString());
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }

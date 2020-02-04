@@ -1,10 +1,10 @@
 package com.tadahtech.mc.staffmanage.listener;
 
-import com.tadahtech.mc.staffmanage.StaffManager;
-import com.tadahtech.mc.staffmanage.punishments.PunishmentManager;
+import com.tadahtech.mc.staffmanage.PunishmentManager;
+import com.tadahtech.mc.staffmanage.player.PlayerPunishmentData;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentType;
-import com.tadahtech.mc.staffmanage.punishments.bans.Ban;
-import com.tadahtech.mc.staffmanage.punishments.record.RecordEntry;
+import com.tadahtech.mc.staffmanage.record.RecordEntry;
+import com.tadahtech.mc.staffmanage.record.RecordEntryType;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -12,6 +12,8 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 
 import java.util.Optional;
 import java.util.UUID;
+
+import static org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result.KICK_BANNED;
 
 public class BanListener implements PunishmentListener {
 
@@ -27,22 +29,24 @@ public class BanListener implements PunishmentListener {
         UUID uuid = event.getUniqueId();
         String name = event.getName();
 
-        Optional<Ban> banOptional = this.manager.getSQLManager().getPunishment(uuid, PunishmentType.BAN);
+        Optional<PlayerPunishmentData> banOptional = this.manager.getSQLManager().getPunishment(uuid, PunishmentType.BAN);
         if (!banOptional.isPresent()) {
             return;
         }
 
-        Ban ban = banOptional.get();
+        PlayerPunishmentData ban = banOptional.get();
+
         if (ban.isTemporary() && ban.isExpired()) {
             Bukkit.getServer().getLogger().info("Found expired ban for " + name + " in database. Deleting it.");
-            this.manager.getSQLManager().deletePunishment(uuid, PunishmentType.BAN);
+            this.manager.getSQLManager().deletePunishment(uuid, name, PunishmentType.BAN);
 
-            RecordEntry entry = new RecordEntry(uuid, name, PunishmentType.REMOVE, null, "Ban expired", "CONSOLE", StaffManager.CONSOLE_UUID, ban.getExpiry());
+            RecordEntry entry = new RecordEntry(RecordEntryType.REMOVE_EXPIRED, ban);
             this.manager.getRecordSQLManager().saveEntry(entry);
             return;
         }
 
-        event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, ban.formatMessage(name));
+        event.disallow(KICK_BANNED, manager.getMessage(ban));
+
         Bukkit.getServer().getLogger().info("Player " + name + " attempted to connect, but is banned! Disallowing connection.");
     }
 }

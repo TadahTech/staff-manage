@@ -1,35 +1,69 @@
 package com.tadahtech.mc.staffmanage.punishments.builder;
 
-import com.tadahtech.mc.staffmanage.punishments.Punishment;
+import com.tadahtech.mc.staffmanage.StaffManager;
+import com.tadahtech.mc.staffmanage.player.PlayerPunishmentData;
+import com.tadahtech.mc.staffmanage.punishments.PunishmentCategory;
+import com.tadahtech.mc.staffmanage.punishments.PunishmentData;
+import com.tadahtech.mc.staffmanage.punishments.PunishmentLength;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentType;
-import com.tadahtech.mc.staffmanage.punishments.bans.PermanentBan;
-import com.tadahtech.mc.staffmanage.punishments.bans.TemporaryBan;
-import com.tadahtech.mc.staffmanage.punishments.kicks.Kick;
-import com.tadahtech.mc.staffmanage.punishments.mutes.PermanentMute;
-import com.tadahtech.mc.staffmanage.punishments.mutes.TemporaryMute;
-import com.tadahtech.mc.staffmanage.punishments.warning.Warning;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 
 import java.util.Date;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class PunishmentBuilder {
 
-    private UUID uuid;
-    private PunishmentType type;
-    private Date expiry;
-    private String reason;
-    private String initiator;
+    private String initiatorName;
     private UUID initiatorUUID;
-    private Date timestamp;
+    private String playerName;
+    private UUID playerUUID;
 
-    public PunishmentBuilder(UUID uuid) {
-        this.uuid = uuid;
-        this.timestamp = new Date();
+    private PunishmentCategory category;
+    private PunishmentData data;
+    private PunishmentType type;
+    private PunishmentLength length;
+
+    private Date expire;
+
+    public PunishmentBuilder(Player initiator, Player player) {
+        this.initiatorName = initiator.getName();
+        this.initiatorUUID = initiator.getUniqueId();
+        this.playerUUID = player.getUniqueId();
+        this.playerName = player.getName();
     }
 
-    public UUID getAccountId() {
-        return this.uuid;
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    public UUID getPlayerUUID() {
+        return playerUUID;
+    }
+
+    public String getInitiatorName() {
+        return initiatorName;
+    }
+
+    public UUID getInitiatorUUID() {
+        return initiatorUUID;
+    }
+
+    public PunishmentCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(PunishmentCategory category) {
+        this.category = category;
+    }
+
+    public PunishmentData getData() {
+        return data;
+    }
+
+    public PunishmentBuilder setData(PunishmentData data) {
+        this.data = data;
+        return this;
     }
 
     public PunishmentType getType() {
@@ -41,84 +75,42 @@ public class PunishmentBuilder {
         return this;
     }
 
-    public Date getExpiry() {
-        return expiry;
+    public PunishmentLength getLength() {
+        return length;
     }
 
-    public PunishmentBuilder setExpiry(Date expiry) {
-        this.expiry = expiry;
+    public PunishmentBuilder setLength(PunishmentLength length) {
+        this.length = length;
+        this.expire = length.toDate();
         return this;
     }
 
-    public PunishmentBuilder setLength(long amount, TimeUnit unit) {
-        return this.setLength(unit.toMillis(amount));
+    public Date getExpire() {
+        return expire;
     }
 
-    public PunishmentBuilder setLength(long millis) {
-        this.expiry = new Date(System.currentTimeMillis() + millis);
+    public PunishmentBuilder setExpire(Date expire) {
+        this.expire = expire;
         return this;
     }
 
-    public String getReason() {
-        return reason;
-    }
+    public void punish() {
+        PlayerPunishmentData data = new PlayerPunishmentData();
 
-    public boolean isTemporary() {
-        return this.getExpiry() != null;
-    }
+        data.setInitiatorName(this.initiatorName);
+        data.setInitiatorUUID(this.initiatorUUID);
 
-    public PunishmentBuilder setReason(String reason) {
-        this.reason = reason;
-        return this;
-    }
+        data.setUuid(this.playerUUID);
+        data.setName(this.playerName);
 
-    public String getInitiator() {
-        return initiator;
-    }
+        data.setTimestamp(new Date());
 
-    public PunishmentBuilder setInitiator(String initiator) {
-        this.initiator = initiator;
-        return this;
-    }
+        data.setCategory(ChatColor.stripColor(this.category.getName()));
+        data.setSubType(ChatColor.stripColor(this.data.getName()));
 
-    public UUID getInitiatorUUID() {
-        return initiatorUUID;
-    }
+        data.setExpiry(this.expire);
+        data.setType(this.type);
 
-    public PunishmentBuilder setInitiatorUUID(UUID initiatorUUID) {
-        this.initiatorUUID = initiatorUUID;
-        return this;
-    }
-
-    public Date getTimestamp() {
-        return timestamp;
-    }
-
-    public PunishmentBuilder setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
-        return this;
-    }
-
-    public Punishment toPunishment() {
-        switch (this.getType()) {
-            case BAN:
-                if (this.isTemporary()) {
-                    return new TemporaryBan(this.getInitiator(), this.getInitiatorUUID(), this.getTimestamp(), this.getReason(), this.getExpiry());
-                }
-
-                return new PermanentBan(this.getInitiator(), this.getInitiatorUUID(), this.getTimestamp(), this.getReason());
-            case MUTE:
-                if (this.isTemporary()) {
-                    return new TemporaryMute(this.getInitiator(), this.getInitiatorUUID(), this.getTimestamp(), this.getReason(), this.getExpiry());
-                }
-
-                return new PermanentMute(this.getInitiator(), this.getInitiatorUUID(), this.getTimestamp(), this.getReason());
-            case KICK:
-                return new Kick(this.getInitiator(), this.getInitiatorUUID(), this.getTimestamp(), this.getReason());
-            case WARNING:
-                return new Warning(this.getInitiator(), this.getInitiatorUUID(), this.getTimestamp(), this.getReason());
-            default:
-                throw new UnsupportedOperationException("Not supported!");
-        }
+        StaffManager.getInstance().getPunishmentManager().punish(data);
     }
 }

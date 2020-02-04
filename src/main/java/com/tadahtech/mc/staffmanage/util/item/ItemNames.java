@@ -61,7 +61,7 @@ public class ItemNames {
         items.add(new ItemInfo("Tipped Arrow", new String[][] {{"tipp", "arrow"}}, Material.TIPPED_ARROW));
         items.add(new ItemInfo("Splash Potion", new String[][] {{"spla", "poti"}}, Material.SPLASH_POTION));
         items.add(new ItemInfo("Lingering Potion", new String[][] {{"linger", "poti"}}, Material.LINGERING_POTION));*/
-        /* 1.9 possibly inncorrect or depreciated items for potions dont use short data values any more for potion types....
+        /* 1.9 possibly inncorrect or depreciated items for potions dont use short data values any more for potion subCat....
            Need to look into this see if there is issues here down the road....... */
         items.add(new ItemInfo("Splash Mundane Potion", new String[][] {{"poti", "mund", "spl"}}, Material.POTION, (short) 16384));
         items.add(new ItemInfo("Splash Potion of Regeneration", new String[][] {{"poti", "rege", "spl"}}, Material.POTION, (short) 16385));

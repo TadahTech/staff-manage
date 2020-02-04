@@ -1,8 +1,7 @@
 package com.tadahtech.mc.staffmanage;
 
-import com.tadahtech.mc.staffmanage.commands.CommandManager;
+import com.tadahtech.mc.staffmanage.command.PunishCommand;
 import com.tadahtech.mc.staffmanage.database.SQLConfig;
-import com.tadahtech.mc.staffmanage.punishments.PunishmentManager;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -15,7 +14,6 @@ public final class StaffManager extends JavaPlugin {
 
     private static StaffManager instance;
     private SQLConfig sqlConfig;
-    private CommandManager commandManager;
     private PunishmentManager punishmentManager;
     private ConfigurationSection messagesSection;
 
@@ -26,7 +24,6 @@ public final class StaffManager extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        this.commandManager = new CommandManager(this);
         FileConfiguration config = this.getConfig();
 
         if (config == null) {
@@ -34,10 +31,12 @@ public final class StaffManager extends JavaPlugin {
             config = this.getConfig();
         }
 
+        getCommand("punish").setExecutor(new PunishCommand());
+
         this.messagesSection = config.getConfigurationSection("messages");
 
         loadSQL(config);
-        this.punishmentManager = new PunishmentManager();
+        this.punishmentManager = new PunishmentManager(this);
 
     }
 
@@ -80,9 +79,6 @@ public final class StaffManager extends JavaPlugin {
         return sqlConfig;
     }
 
-    public CommandManager getCommandManager() {
-        return commandManager;
-    }
 
     public PunishmentManager getPunishmentManager() {
         return punishmentManager;
