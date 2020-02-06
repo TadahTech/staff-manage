@@ -15,10 +15,10 @@ public class PlayerLengthData implements Savable {
     @Saved(primaryKey = true, columnType = ColumnType.UUID)
     private UUID uuid;
 
-    @Saved(primaryKey = true)
+    @Saved
     private String name;
 
-    @Saved(columnType = ColumnType.JSON)
+    @Saved(columnType = ColumnType.GSON)
     private Map<PunishmentType, Integer> lengthIndexes;
 
     public PlayerLengthData() {

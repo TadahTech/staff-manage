@@ -13,7 +13,6 @@ public class RecordSQLManager extends GenericSQLManager<RecordEntry> {
         super("player_punishment_records", RecordEntry.class);
     }
 
-
     public void remove(RecordEntry entry) {
         entry.remove();
         this.saveEntry(entry);

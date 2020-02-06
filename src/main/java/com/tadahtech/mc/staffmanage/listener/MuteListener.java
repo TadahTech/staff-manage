@@ -3,7 +3,6 @@ package com.tadahtech.mc.staffmanage.listener;
 import com.tadahtech.mc.staffmanage.PunishmentManager;
 import com.tadahtech.mc.staffmanage.mute.MuteManager;
 import com.tadahtech.mc.staffmanage.player.PlayerPunishmentData;
-import com.tadahtech.mc.staffmanage.punishments.PunishmentType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -32,7 +31,7 @@ public class MuteListener implements PunishmentListener {
         }
 
         if (mute.isTemporary() && mute.isExpired()) {
-            this.punishmentManager.getSQLManager().deletePunishment(player.getUniqueId(), player.getName(), PunishmentType.MUTE);
+            this.punishmentManager.removePunishment(mute);
             this.muteManager.unmute(player);
             return;
         }

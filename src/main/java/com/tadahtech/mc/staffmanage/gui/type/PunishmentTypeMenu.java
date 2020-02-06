@@ -13,7 +13,7 @@ public class PunishmentTypeMenu extends Menu {
     private PunishmentBuilder builder;
 
     public PunishmentTypeMenu(PunishmentBuilder data) {
-        super(data.getData().getName());
+        super(data.getData().getGuiName());
         this.builder = data;
     }
 

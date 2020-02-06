@@ -5,6 +5,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.tadahtech.mc.staffmanage.length.LengthManager;
 import com.tadahtech.mc.staffmanage.length.PunishmentLength;
+import com.tadahtech.mc.staffmanage.listener.BanListener;
+import com.tadahtech.mc.staffmanage.listener.MuteListener;
 import com.tadahtech.mc.staffmanage.mute.MuteManager;
 import com.tadahtech.mc.staffmanage.player.PlayerPunishmentData;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentCategory;
@@ -12,7 +14,10 @@ import com.tadahtech.mc.staffmanage.punishments.PunishmentData;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentSQLManager;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentType;
 import com.tadahtech.mc.staffmanage.punishments.builder.PunishmentBuilderManager;
+import com.tadahtech.mc.staffmanage.record.RecordEntry;
+import com.tadahtech.mc.staffmanage.record.RecordEntryType;
 import com.tadahtech.mc.staffmanage.record.RecordSQLManager;
+import com.tadahtech.mc.staffmanage.util.Colors;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -42,6 +47,10 @@ public class PunishmentManager {
         this.muteManager = new MuteManager();
         this.lengthManager = new LengthManager(this);
         this.categoryMap = Maps.newHashMap();
+
+        new BanListener(this);
+        new MuteListener(this);
+
 
         setupData(staffManager.getConfig());
     }
@@ -121,37 +130,22 @@ public class PunishmentManager {
         Bukkit.getPlayer(data.getInitiatorUUID()).sendMessage(getStaff(data));
     }
 
+    public void removePunishment(PlayerPunishmentData punishment) {
+        this.getSQLManager().deletePunishment(punishment.getUuid(), punishment.getType());
+
+        RecordEntry entry = new RecordEntry(RecordEntryType.REMOVE_EXPIRED, punishment);
+        this.getRecordSQLManager().saveEntry(entry);
+    }
+
     public String getMessage(PlayerPunishmentData data) {
         String base = StaffManager.getInstance().getMessagesSection().getString(data.getType().name().toLowerCase());
-
-        base = base.replace("%player%", data.getName())
-          .replace("%staff%", data.getInitiatorName())
-          .replace("%category%", data.getCategory())
-          .replace("%subCat%", data.getSubType())
-          .replace("%type%", data.getType().getMessageVersion())
-          .replace("%timeRemaining%", data.getTimeRemaining())
-          .replace("%time%", data.getTime())
-          .replaceAll("\\n", "\n");
-
-        base = ChatColor.translateAlternateColorCodes('&', base);
-
+        base = replacePlaceHolders(data, base);
         return base;
     }
 
     private String getStaff(PlayerPunishmentData data) {
         String base = StaffManager.getInstance().getMessagesSection().getString("staff");
-
-        base = base.replace("%player%", data.getName())
-          .replace("%staff%", data.getInitiatorName())
-          .replace("%category%", data.getCategory())
-          .replace("%subCat%", data.getSubType())
-          .replace("%type%", data.getType().getMessageVersion())
-          .replace("%timeRemaining%", data.getTimeRemaining())
-          .replace("%time%", data.getTime())
-          .replaceAll("\\n", "\n");
-
-        base = ChatColor.translateAlternateColorCodes('&', base);
-
+        base = replacePlaceHolders(data, base);
         return base;
     }
 
@@ -161,16 +155,20 @@ public class PunishmentManager {
         }
 
         String base = StaffManager.getInstance().getMessagesSection().getString("ingame");
-
-        base = base.replace("%player%", data.getName())
-          .replace("%category%", data.getCategory())
-          .replace("%type%", data.getType().getMessageVersion())
-          .replace("%subCat%", data.getSubType())
-          .replaceAll("\\n", "\n");
-
-        base = ChatColor.translateAlternateColorCodes('&', base);
-
+        base = replacePlaceHolders(data, base);
         Bukkit.broadcastMessage(base);
+    }
+
+    private String replacePlaceHolders(PlayerPunishmentData data, String base) {
+        base = base.replace("%player%", data.getName())
+          .replace("%staff%", data.getInitiatorName())
+          .replace("%category%", data.getCategory())
+          .replace("%subCat%", data.getSubType())
+          .replace("%type%", data.getType().getMessageVersion())
+          .replace("%timeRemaining%", data.getTimeRemaining())
+          .replace("%time%", data.getExpiry() == null ? "" : data.getTime())
+          .replaceAll("\\n", Colors.RESET + "\n");
+        return ChatColor.translateAlternateColorCodes('&', base);
     }
 
     private void setupData(FileConfiguration config) {
@@ -179,24 +177,24 @@ public class PunishmentManager {
             ConfigurationSection section = categories.getConfigurationSection(s);
 
             Material catIcon = Material.getMaterial(section.getString("icon"));
+
             String guiName = ChatColor.translateAlternateColorCodes('&', section.getString("gui-name"));
 
             PunishmentCategory category = new PunishmentCategory(guiName, catIcon);
-            ConfigurationSection subTypes = section.getConfigurationSection("subCat");
+            ConfigurationSection subTypes = section.getConfigurationSection("types");
 
             for (String sub : subTypes.getKeys(false)) {
                 generateSubTypes(category, subTypes, sub);
             }
 
-            categoryMap.put(s.toLowerCase(), category);
+            categoryMap.put(category.getName().toLowerCase(), category);
 
-            StaffManager.getInstance().getLogger().info("Added new punishment Category: " + category.getName() + ". Contains " + category.getPunishments().size() + " sub subCat");
+            StaffManager.getInstance().getLogger().info("Added new punishment Category: " + category.getName() + ". Contains " + category.getPunishments().size() + " subCats");
         }
     }
 
     private void generateSubTypes(PunishmentCategory category, ConfigurationSection subTypes, String sub) {
-        ConfigurationSection section;
-        section = subTypes.getConfigurationSection(sub);
+        ConfigurationSection section = subTypes.getConfigurationSection(sub);
 
         Material icon = Material.getMaterial(section.getString("icon"));
         String uiName = ChatColor.translateAlternateColorCodes('&', section.getString("gui-name"));
@@ -211,7 +209,10 @@ public class PunishmentManager {
             getLengths(subTypes, lengths, l);
         }
 
-        PunishmentData data = new PunishmentData(uiName, icon, allowBan, allowPermMute, allowIpBan, lengths);
+        PunishmentData data = new PunishmentData(sub, uiName, icon, allowBan, allowPermMute, allowIpBan, lengths);
+
+        StaffManager.getInstance().getLogger().info("Added new PunishmentData " + data.getName());
+
         category.add(data);
     }
 

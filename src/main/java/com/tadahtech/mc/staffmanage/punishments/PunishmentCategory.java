@@ -1,6 +1,7 @@
 package com.tadahtech.mc.staffmanage.punishments;
 
 import com.google.common.collect.Maps;
+import com.tadahtech.mc.staffmanage.util.Colors;
 import com.tadahtech.mc.staffmanage.util.item.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -18,7 +19,7 @@ public class PunishmentCategory {
         this.name = name;
         this.icon = icon;
         this.punishments = Maps.newHashMap();
-        this.itemStack = new ItemBuilder(icon).setTitle(name).build();
+        this.itemStack = new ItemBuilder(icon).setTitle(Colors.AQUA + name).build();
     }
 
     public String getName() {

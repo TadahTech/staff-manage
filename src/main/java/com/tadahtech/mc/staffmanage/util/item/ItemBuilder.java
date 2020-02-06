@@ -51,64 +51,8 @@ public class ItemBuilder {
         // We have this for GSON support.
     }
 
-    public ItemBuilder(ItemBuilder builder) {
-        this.enchants = Maps.newHashMap(builder.enchants);
-        this.amount = builder.amount;
-        this.data = builder.data;
-        this.lore = Lists.newArrayList(builder.lore);
-        this.mat = builder.mat;
-        this.title = builder.title;
-        this.glow = builder.glow;
-        this.skullOwner = builder.skullOwner;
-        this.skullCustomTexture = builder.skullCustomTexture;
-        this.unbreakable = builder.unbreakable;
-        this.color = builder.color;
-    }
-
-    public ItemBuilder(ItemStack stack) {
-        this.mat = stack.getType();
-        this.amount = stack.getAmount();
-        this.enchants.putAll(stack.getEnchantments());
-        this.data = stack.getDurability();
-        this.potionEffects = Lists.newArrayList();
-
-        if (!stack.hasItemMeta()) {
-            return;
-        }
-
-        this.title = stack.getItemMeta().getDisplayName();
-
-        if (stack.getItemMeta() instanceof PotionMeta) {
-            PotionMeta meta = (PotionMeta) stack.getItemMeta();
-            this.potionEffects = Lists.newArrayList(meta.getCustomEffects());
-        }
-
-        if (stack.getItemMeta() instanceof SkullMeta) {
-            SkullMeta meta = (SkullMeta) stack.getItemMeta();
-            this.skullCustomTexture = SkullTexture.getTexture(meta);
-            if (this.skullCustomTexture == null) {
-                this.skullOwner = meta.getOwner();
-            }
-        }
-
-        if (stack.getItemMeta() instanceof LeatherArmorMeta) {
-            LeatherArmorMeta meta = (LeatherArmorMeta) stack.getItemMeta();
-            this.color = meta.getColor();
-        }
-
-        if (!stack.getItemMeta().hasLore()) {
-            return;
-        }
-
-        this.lore = stack.getItemMeta().getLore();
-    }
-
     public ItemBuilder(Material mat) {
         this(mat, 1, (short) 0);
-    }
-
-    public ItemBuilder(MaterialData data) {
-        this(data.getMaterial(), 1, data.getData());
     }
 
     public ItemBuilder(Material mat, int amount, short data) {

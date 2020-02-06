@@ -14,6 +14,7 @@ import java.util.Map;
 public class PunishmentData {
 
     private String name;
+    private String guiName;
     private Material icon;
     private boolean allowBan;
     private boolean allowMute;
@@ -21,8 +22,9 @@ public class PunishmentData {
     private Map<PunishmentType, LinkedList<PunishmentLength>> lengths;
     private int slots;
 
-    public PunishmentData(String name, Material icon, boolean allowBan, boolean allowMute, boolean allowIPBan, Map<PunishmentType, LinkedList<PunishmentLength>> lengths) {
+    public PunishmentData(String name, String guiName, Material icon, boolean allowBan, boolean allowMute, boolean allowIPBan, Map<PunishmentType, LinkedList<PunishmentLength>> lengths) {
         this.name = name;
+        this.guiName = guiName;
         this.icon = icon;
         this.allowBan = allowBan;
         this.allowMute = allowMute;
@@ -71,7 +73,7 @@ public class PunishmentData {
         LinkedList<PunishmentLength> lengths = this.lengths.get(type);
 
         if (lengths == null) {
-            throw new IllegalArgumentException("no lengths found for type " + type.name());
+            return null;
         }
 
         return lengths.get(index);
@@ -82,13 +84,15 @@ public class PunishmentData {
     }
 
     public ItemStack toItemStack() {
-        ItemBuilder builder = new ItemBuilder(icon).setTitle(name);
+        ItemBuilder builder = new ItemBuilder(icon).setTitle(Colors.GOLD + getGuiName());
 
         List<String> lore = Lists.newArrayList();
 
+        lore.add(" ");
         lore.add(itemize("Allow Perm Ban", this.allowBan));
         lore.add(itemize("Allow Perm Mute", this.allowMute));
         lore.add(itemize("Allow IP Ban", this.allowIPBan));
+        lore.add(" ");
 
         builder.setLore(lore);
 
@@ -97,5 +101,9 @@ public class PunishmentData {
 
     protected static String itemize(String label, boolean value) {
         return Colors.GOLD + label + ": " + (value ? (Colors.GREEN + "True") : (Colors.RED + "False"));
+    }
+
+    public String getGuiName() {
+        return guiName;
     }
 }

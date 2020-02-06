@@ -13,14 +13,17 @@ public class RecordEntry implements Savable {
     @Saved(primaryKey = true, columnType = ColumnType.UUID)
     private UUID uuid;
 
-    @Saved(primaryKey = true)
+    @Saved
     private String name;
 
     @Saved(primaryKey = true, columnType = ColumnType.ENUM)
     private RecordEntryType type;
 
-    @Saved(columnType = ColumnType.LONG_STRING)
-    private String reason;
+    @Saved
+    private String category;
+
+    @Saved
+    private String subType;
 
     @Saved
     private String initiatorName;
@@ -39,14 +42,15 @@ public class RecordEntry implements Savable {
     }
 
     public RecordEntry(RecordEntryType type, PlayerPunishmentData data) {
-        this(data.getUuid(), data.getName(), type, data.getReason(), data.getInitiatorName(), data.getInitiatorUUID(), new Date());
+        this(data.getUuid(), data.getName(), type, data.getCategory(), data.getSubType(), data.getInitiatorName(), data.getInitiatorUUID(), new Date());
     }
 
-    public RecordEntry(UUID uuid, String name, RecordEntryType type, String reason, String initiatorName, UUID initiatorUUID, Date timestamp) {
+    public RecordEntry(UUID uuid, String name, RecordEntryType type, String category, String subType, String initiatorName, UUID initiatorUUID, Date timestamp) {
         this.uuid = uuid;
         this.name = name;
         this.type = type;
-        this.reason = reason;
+        this.category = category;
+        this.subType = subType;
         this.initiatorName = initiatorName;
         this.initiatorUUID = initiatorUUID;
         this.timestamp = timestamp;
@@ -64,8 +68,12 @@ public class RecordEntry implements Savable {
         return type;
     }
 
-    public String getReason() {
-        return reason;
+    public String getCategory() {
+        return category;
+    }
+
+    public String getSubType() {
+        return subType;
     }
 
     public String getInitiatorName() {

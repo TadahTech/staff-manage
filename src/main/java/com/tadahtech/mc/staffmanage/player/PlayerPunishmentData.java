@@ -14,7 +14,7 @@ public class PlayerPunishmentData implements Savable {
     @Saved(primaryKey = true, columnType = ColumnType.UUID)
     private UUID uuid;
 
-    @Saved(primaryKey = true)
+    @Saved
     private String name;
 
     @Saved(primaryKey = true, columnType = ColumnType.ENUM)

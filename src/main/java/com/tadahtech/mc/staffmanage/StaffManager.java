@@ -2,6 +2,7 @@ package com.tadahtech.mc.staffmanage;
 
 import com.tadahtech.mc.staffmanage.command.PunishCommand;
 import com.tadahtech.mc.staffmanage.database.SQLConfig;
+import com.tadahtech.mc.staffmanage.menu.listeners.MenuListener;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -23,13 +24,11 @@ public final class StaffManager extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        getLogger().info("Starting Staff Manager...");
         instance = this;
-        FileConfiguration config = this.getConfig();
+        this.saveDefaultConfig();
 
-        if (config == null) {
-            this.saveDefaultConfig();
-            config = this.getConfig();
-        }
+        FileConfiguration config = this.getConfig();
 
         getCommand("punish").setExecutor(new PunishCommand());
 
@@ -38,6 +37,9 @@ public final class StaffManager extends JavaPlugin {
         loadSQL(config);
         this.punishmentManager = new PunishmentManager(this);
 
+        new MenuListener();
+
+        getLogger().info("Started Staff Manager...");
     }
 
     @Override

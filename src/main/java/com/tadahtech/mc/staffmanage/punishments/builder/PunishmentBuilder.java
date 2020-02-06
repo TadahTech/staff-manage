@@ -5,7 +5,6 @@ import com.tadahtech.mc.staffmanage.player.PlayerPunishmentData;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentCategory;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentData;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentType;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.Date;
@@ -21,7 +20,7 @@ public class PunishmentBuilder {
     private PunishmentCategory category;
     private PunishmentData data;
     private PunishmentType type;
-    
+
     public PunishmentBuilder(Player initiator, Player player) {
         this.initiatorName = initiator.getName();
         this.initiatorUUID = initiator.getUniqueId();
@@ -62,8 +61,8 @@ public class PunishmentBuilder {
 
         data.setTimestamp(new Date());
 
-        data.setCategory(ChatColor.stripColor(this.category.getName()));
-        data.setSubType(ChatColor.stripColor(this.data.getName()));
+        data.setCategory(this.category.getName());
+        data.setSubType(this.data.getName());
 
         data.setType(this.type);
 

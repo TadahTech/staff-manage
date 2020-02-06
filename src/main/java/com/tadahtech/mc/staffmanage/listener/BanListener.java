@@ -3,8 +3,6 @@ package com.tadahtech.mc.staffmanage.listener;
 import com.tadahtech.mc.staffmanage.PunishmentManager;
 import com.tadahtech.mc.staffmanage.player.PlayerPunishmentData;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentType;
-import com.tadahtech.mc.staffmanage.record.RecordEntry;
-import com.tadahtech.mc.staffmanage.record.RecordEntryType;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -38,10 +36,7 @@ public class BanListener implements PunishmentListener {
 
         if (ban.isTemporary() && ban.isExpired()) {
             Bukkit.getServer().getLogger().info("Found expired ban for " + name + " in database. Deleting it.");
-            this.manager.getSQLManager().deletePunishment(uuid, name, PunishmentType.BAN);
-
-            RecordEntry entry = new RecordEntry(RecordEntryType.REMOVE_EXPIRED, ban);
-            this.manager.getRecordSQLManager().saveEntry(entry);
+            this.manager.removePunishment(ban);
             return;
         }
 

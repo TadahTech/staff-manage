@@ -1,7 +1,7 @@
 sql:
   host: localhost
   user: root
-  password: hopefullyNotPassword
+  password: password
   database: punishments
   port: 3306
 
@@ -9,12 +9,12 @@ chat-prefix: "&6&lHydra&f&l(Punishments) &e» &f"
 
 categories:
   chat:
-    icon: MATERIAL
+    icon: BOOK_AND_QUILL
     gui-name: "Chat Offenses"
     types:
       spam:
-        icon: MATERIAL
-        gui-name: "Temp Mute"
+        icon: PAPER
+        gui-name: "Spam"
         allow-ban: true
         allow-perm-mute: true
         allow-ip-ban: false
@@ -34,9 +34,9 @@ messages:
   staff: "You have %type% %player% for %category% - %subCat%"
   ingame: "%player% has been %type% for %category% - %subCat%"
 
-  ban: "            &c&bPERMANENTLY BANNED\n
+  ban: "&c&lPERMANENTLY BANNED\n
               You have been banned from HydraCraft\n
-              Reason: %reason%\n\n
+              Reason: %category% - %subCat%\n\n
 
               Purchase an unban at\n
               https://store.hydracraft.net/category/1422152\n\n
@@ -45,9 +45,9 @@ messages:
               Appeal on the forums:\n
               http://hydracraft.net/forums"
 
-  tempban: "        &c&bTEMPORARILY BANNED&r\n
+  tempban: "&c&bTEMPORARILY BANNED&r\n
               You have been banned from HydraCraft\n
-              Reason: %reason%\n\n
+              Reason: %category% - %subCat%\n\n
 
               Ban expires in: %timeRemaining%\n\n
 
@@ -60,7 +60,7 @@ messages:
   
   mute: "###################################################\n
                   You’ve been &c&bPERMANENTLY&r muted by %staff%\n
-                  Reason: Character Spam\n\n
+                  Reason: %category% - %subCat%\n\n
 
                   Get an unmute at\n
                   https://store.hydracraft.net/category/1422152\n
@@ -70,11 +70,11 @@ messages:
 
   tempmute: "###################################################\n
                  You’ve been muted for %time% by %staff%\n
-                 Reason: Character Spam\n\n
+                 Reason: Reason: %category% - %subCat%\n\n
 
                  Next Punishment: %next%\n
              ###################################################"
 
-  kick: "You were kicked by %by% for %reason%%"
+  kick: "You were kicked by %staff% for Reason: %category% - %subCat%"
   
-  warning: "You have been warned by %by% for %reason%"
+  warning: "You have been warned by %staff% Reason: %category% - %subCat%"

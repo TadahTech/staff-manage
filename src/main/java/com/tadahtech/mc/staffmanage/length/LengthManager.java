@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.tadahtech.mc.staffmanage.PunishmentManager;
 import com.tadahtech.mc.staffmanage.listener.PunishmentListener;
 import com.tadahtech.mc.staffmanage.player.PlayerPunishmentData;
+import com.tadahtech.mc.staffmanage.punishments.PunishmentCategory;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentData;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -48,7 +49,9 @@ public class LengthManager implements PunishmentListener {
         }
 
         int currentIndex = lengthData.getIndexFor(data.getType());
-        PunishmentData punishmentData = this.punishmentManager.getCategory(data.getCategory()).getDataFor(data.getSubType());
+
+        PunishmentCategory category = this.punishmentManager.getCategory(data.getCategory());
+        PunishmentData punishmentData = category.getDataFor(data.getSubType());
 
         this.playerData.put(data.getUuid(), lengthData);
 
