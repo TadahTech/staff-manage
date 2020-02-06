@@ -1,6 +1,7 @@
 package com.tadahtech.mc.staffmanage.punishments.builder;
 
 import com.google.common.collect.Maps;
+import org.bukkit.entity.Player;
 
 import java.util.Map;
 import java.util.UUID;
@@ -25,4 +26,9 @@ public class PunishmentBuilderManager {
         return getBuilder(player) != null;
     }
 
+    public PunishmentBuilder makeBuilder(Player player, Player target) {
+        PunishmentBuilder builder = new PunishmentBuilder(player, target);
+        this.builderMap.put(player.getUniqueId(), builder);
+        return builder;
+    }
 }

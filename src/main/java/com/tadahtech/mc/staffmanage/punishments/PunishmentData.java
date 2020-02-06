@@ -1,6 +1,7 @@
 package com.tadahtech.mc.staffmanage.punishments;
 
 import com.google.common.collect.Lists;
+import com.tadahtech.mc.staffmanage.length.PunishmentLength;
 import com.tadahtech.mc.staffmanage.util.Colors;
 import com.tadahtech.mc.staffmanage.util.item.ItemBuilder;
 import org.bukkit.Material;
@@ -64,6 +65,16 @@ public class PunishmentData {
 
     public Map<PunishmentType, LinkedList<PunishmentLength>> getLengths() {
         return lengths;
+    }
+
+    public PunishmentLength getLengthFor(PunishmentType type, int index) {
+        LinkedList<PunishmentLength> lengths = this.lengths.get(type);
+
+        if (lengths == null) {
+            throw new IllegalArgumentException("no lengths found for type " + type.name());
+        }
+
+        return lengths.get(index);
     }
 
     public int getSlots() {

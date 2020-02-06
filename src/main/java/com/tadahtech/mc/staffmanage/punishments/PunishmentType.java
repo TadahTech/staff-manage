@@ -1,22 +1,26 @@
 package com.tadahtech.mc.staffmanage.punishments;
 
 import com.google.common.collect.Maps;
+import com.tadahtech.mc.staffmanage.util.Colors;
+import com.tadahtech.mc.staffmanage.util.item.ItemBuilder;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 
 public enum PunishmentType {
 
-    BAN(null, true, "banned"),
-    TEMP_BAN("tempban", true, "temporaily banned"),
+    BAN(null, true, "banned", Material.BARRIER),
+    TEMP_BAN("tempban", true, "Temporarily banned", Material.REDSTONE),
 
-    IP_BAN("ipban", true, "IP banned"),
-    IP_MUTE("ipmute", true, "IP Muted"),
+    IP_BAN("ipban", true, "IP banned", Material.ANVIL),
+    IP_MUTE("ipmute", true, "IP Muted", Material.ENCHANTED_BOOK),
 
-    MUTE(null, true, "muted"),
-    TEMP_MUTE("tempmute", "temporarily muted"),
+    MUTE(null, true, "muted", Material.BOOK),
+    TEMP_MUTE("tempmute", false, "Temporarily Muted", Material.GHAST_TEAR),
 
-    KICK(null, false, "kicked"),
-    WARNING(null, false, "warned");
+    KICK(null, false, "kicked", Material.GOLD_BOOTS),
+    WARNING(null, false, "warned", Material.PAPER);
 
     private static final Map<String, PunishmentType> TYPE_MAP = Maps.newHashMap();
 
@@ -29,17 +33,13 @@ public enum PunishmentType {
     private String label;
     private String messageVersion;
     private boolean broadcast;
+    private Material material;
 
-    PunishmentType(String label, boolean broadcast, String messageVersion) {
-        this.label = label;
+    PunishmentType(String label, boolean broadcast, String messageVersion, Material material) {
+        this.label = label == null ? name() : label;
         this.messageVersion = messageVersion;
         this.broadcast = broadcast;
-    }
-
-    PunishmentType(String label, String messageVersion) {
-        this.label = label;
-        this.broadcast = false;
-        this.messageVersion = messageVersion;
+        this.material = material;
     }
 
     public static PunishmentType getByName(String s) {
@@ -56,5 +56,9 @@ public enum PunishmentType {
 
     public String getMessageVersion() {
         return messageVersion;
+    }
+
+    public ItemStack toItemStack() {
+        return new ItemBuilder(this.material).setTitle(Colors.GOLD + this.messageVersion).build();
     }
 }

@@ -1,4 +1,4 @@
-package com.tadahtech.mc.staffmanage.punishments;
+package com.tadahtech.mc.staffmanage.length;
 
 import com.tadahtech.mc.staffmanage.util.UtilTime;
 

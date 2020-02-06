@@ -3,11 +3,12 @@ package com.tadahtech.mc.staffmanage;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.tadahtech.mc.staffmanage.length.LengthManager;
+import com.tadahtech.mc.staffmanage.length.PunishmentLength;
 import com.tadahtech.mc.staffmanage.mute.MuteManager;
 import com.tadahtech.mc.staffmanage.player.PlayerPunishmentData;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentCategory;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentData;
-import com.tadahtech.mc.staffmanage.punishments.PunishmentLength;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentSQLManager;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentType;
 import com.tadahtech.mc.staffmanage.punishments.builder.PunishmentBuilderManager;
@@ -17,6 +18,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -29,6 +31,7 @@ public class PunishmentManager {
     private PunishmentSQLManager sqlManager;
     private RecordSQLManager recordSQLManager;
     private PunishmentBuilderManager builderManager;
+    private LengthManager lengthManager;
     private MuteManager muteManager;
     private Map<String, PunishmentCategory> categoryMap;
 
@@ -37,6 +40,7 @@ public class PunishmentManager {
         this.recordSQLManager = new RecordSQLManager();
         this.builderManager = new PunishmentBuilderManager();
         this.muteManager = new MuteManager();
+        this.lengthManager = new LengthManager(this);
         this.categoryMap = Maps.newHashMap();
 
         setupData(staffManager.getConfig());
@@ -44,6 +48,10 @@ public class PunishmentManager {
 
     public Set<PunishmentCategory> getAll() {
         return Sets.newHashSet(this.categoryMap.values());
+    }
+
+    public PunishmentCategory getCategory(String name) {
+        return this.categoryMap.get(name.toLowerCase());
     }
 
     public PunishmentSQLManager getSQLManager() {
@@ -63,6 +71,49 @@ public class PunishmentManager {
     }
 
     public void punish(PlayerPunishmentData data) {
+        Player player = Bukkit.getPlayer(data.getUuid());
+
+        if (player == null) {
+            throw new IllegalArgumentException("that player is not online");
+        }
+
+        PunishmentLength length = this.lengthManager.getLength(data);
+
+        if (length == null) {
+            switch (data.getType()) {
+                case TEMP_BAN:
+                    data.setType(PunishmentType.BAN);
+                    break;
+                case TEMP_MUTE:
+                    data.setType(PunishmentType.MUTE);
+                    break;
+            }
+        }
+
+        if (length != null) {
+            this.lengthManager.incrementLength(data);
+            data.setExpiry(length.toDate());
+        }
+
+        String message = getMessage(data);
+
+        switch (data.getType()) {
+            case BAN:
+            case TEMP_BAN:
+            case KICK:
+            case IP_BAN:
+                player.kickPlayer(message);
+                break;
+            case MUTE:
+            case TEMP_MUTE:
+            case IP_MUTE:
+                this.muteManager.mute(data);
+                player.sendMessage(message);
+                break;
+            default:
+                player.sendMessage(message);
+        }
+
         broadcast(data);
         this.sqlManager.save(data);
         this.builderManager.cleanup(data.getInitiatorUUID());
@@ -161,7 +212,7 @@ public class PunishmentManager {
         }
 
         PunishmentData data = new PunishmentData(uiName, icon, allowBan, allowPermMute, allowIpBan, lengths);
-        category.getPunishments().add(data);
+        category.add(data);
     }
 
     private void getLengths(ConfigurationSection subTypes, Map<PunishmentType, LinkedList<PunishmentLength>> lengths, String l) {

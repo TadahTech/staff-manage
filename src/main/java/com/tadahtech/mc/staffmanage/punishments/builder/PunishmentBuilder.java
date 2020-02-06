@@ -4,7 +4,6 @@ import com.tadahtech.mc.staffmanage.StaffManager;
 import com.tadahtech.mc.staffmanage.player.PlayerPunishmentData;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentCategory;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentData;
-import com.tadahtech.mc.staffmanage.punishments.PunishmentLength;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentType;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -22,35 +21,12 @@ public class PunishmentBuilder {
     private PunishmentCategory category;
     private PunishmentData data;
     private PunishmentType type;
-    private PunishmentLength length;
-
-    private Date expire;
-
+    
     public PunishmentBuilder(Player initiator, Player player) {
         this.initiatorName = initiator.getName();
         this.initiatorUUID = initiator.getUniqueId();
         this.playerUUID = player.getUniqueId();
         this.playerName = player.getName();
-    }
-
-    public String getPlayerName() {
-        return playerName;
-    }
-
-    public UUID getPlayerUUID() {
-        return playerUUID;
-    }
-
-    public String getInitiatorName() {
-        return initiatorName;
-    }
-
-    public UUID getInitiatorUUID() {
-        return initiatorUUID;
-    }
-
-    public PunishmentCategory getCategory() {
-        return category;
     }
 
     public void setCategory(PunishmentCategory category) {
@@ -75,25 +51,6 @@ public class PunishmentBuilder {
         return this;
     }
 
-    public PunishmentLength getLength() {
-        return length;
-    }
-
-    public PunishmentBuilder setLength(PunishmentLength length) {
-        this.length = length;
-        this.expire = length.toDate();
-        return this;
-    }
-
-    public Date getExpire() {
-        return expire;
-    }
-
-    public PunishmentBuilder setExpire(Date expire) {
-        this.expire = expire;
-        return this;
-    }
-
     public void punish() {
         PlayerPunishmentData data = new PlayerPunishmentData();
 
@@ -108,7 +65,6 @@ public class PunishmentBuilder {
         data.setCategory(ChatColor.stripColor(this.category.getName()));
         data.setSubType(ChatColor.stripColor(this.data.getName()));
 
-        data.setExpiry(this.expire);
         data.setType(this.type);
 
         StaffManager.getInstance().getPunishmentManager().punish(data);

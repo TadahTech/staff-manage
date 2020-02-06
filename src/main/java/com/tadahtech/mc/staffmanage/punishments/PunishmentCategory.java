@@ -1,23 +1,23 @@
 package com.tadahtech.mc.staffmanage.punishments;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.tadahtech.mc.staffmanage.util.item.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.List;
+import java.util.Map;
 
 public class PunishmentCategory {
 
     private String name;
     private Material icon;
-    private List<PunishmentData> punishments;
+    private Map<String, PunishmentData> punishments;
     private final ItemStack itemStack;
 
     public PunishmentCategory(String name, Material icon) {
         this.name = name;
         this.icon = icon;
-        this.punishments = Lists.newArrayList();
+        this.punishments = Maps.newHashMap();
         this.itemStack = new ItemBuilder(icon).setTitle(name).build();
     }
 
@@ -29,12 +29,16 @@ public class PunishmentCategory {
         return icon;
     }
 
-    public List<PunishmentData> getPunishments() {
+    public Map<String, PunishmentData> getPunishments() {
         return punishments;
     }
 
-    public void setPunishments(List<PunishmentData> punishments) {
-        this.punishments = punishments;
+    public PunishmentData getDataFor(String subcategory) {
+        return this.punishments.get(subcategory.toLowerCase());
+    }
+
+    public void add(PunishmentData data) {
+        this.punishments.put(data.getName().toLowerCase(), data);
     }
 
     public ItemStack toItemStack() {

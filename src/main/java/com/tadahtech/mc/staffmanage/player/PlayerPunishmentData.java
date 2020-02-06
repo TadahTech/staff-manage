@@ -46,7 +46,7 @@ public class PlayerPunishmentData implements Savable {
     }
 
     public boolean isTemporary() {
-        return this.expiry != null;
+        return this.type == PunishmentType.TEMP_BAN || this.type == PunishmentType.TEMP_MUTE;
     }
 
     public UUID getUuid() {
