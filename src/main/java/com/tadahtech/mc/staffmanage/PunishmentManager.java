@@ -104,7 +104,7 @@ public class PunishmentManager {
             data.setExpiry(length.toDate());
         }
 
-        String message = getMessage(data);
+        String message = StaffManager.getInstance().getChatPrefix() + getMessage(data);
 
         switch (data.getType()) {
             case BAN:

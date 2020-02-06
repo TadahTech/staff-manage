@@ -3,6 +3,7 @@ package com.tadahtech.mc.staffmanage;
 import com.tadahtech.mc.staffmanage.command.PunishCommand;
 import com.tadahtech.mc.staffmanage.database.SQLConfig;
 import com.tadahtech.mc.staffmanage.menu.listeners.MenuListener;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -17,6 +18,7 @@ public final class StaffManager extends JavaPlugin {
     private SQLConfig sqlConfig;
     private PunishmentManager punishmentManager;
     private ConfigurationSection messagesSection;
+    private String chatPrefix;
 
     public static StaffManager getInstance() {
         return instance;
@@ -29,6 +31,8 @@ public final class StaffManager extends JavaPlugin {
         this.saveDefaultConfig();
 
         FileConfiguration config = this.getConfig();
+
+        this.chatPrefix = ChatColor.translateAlternateColorCodes('&', config.getString("chat-prefix"));
 
         getCommand("punish").setExecutor(new PunishCommand());
 
@@ -88,5 +92,9 @@ public final class StaffManager extends JavaPlugin {
 
     public ConfigurationSection getMessagesSection() {
         return messagesSection;
+    }
+
+    public String getChatPrefix() {
+        return chatPrefix;
     }
 }
