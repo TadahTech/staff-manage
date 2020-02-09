@@ -1,5 +1,6 @@
 package com.tadahtech.mc.staffmanage;
 
+import com.tadahtech.mc.staffmanage.command.PardonCommand;
 import com.tadahtech.mc.staffmanage.command.PunishCommand;
 import com.tadahtech.mc.staffmanage.database.SQLConfig;
 import com.tadahtech.mc.staffmanage.menu.listeners.MenuListener;
@@ -34,14 +35,15 @@ public final class StaffManager extends JavaPlugin {
 
         this.chatPrefix = ChatColor.translateAlternateColorCodes('&', config.getString("chat-prefix"));
 
-        getCommand("punish").setExecutor(new PunishCommand());
-
         this.messagesSection = config.getConfigurationSection("messages");
 
         loadSQL(config);
         this.punishmentManager = new PunishmentManager(this);
 
         new MenuListener();
+
+        getCommand("punish").setExecutor(new PunishCommand());
+        getCommand("pardon").setExecutor(new PardonCommand());
 
         getLogger().info("Started Staff Manager...");
     }

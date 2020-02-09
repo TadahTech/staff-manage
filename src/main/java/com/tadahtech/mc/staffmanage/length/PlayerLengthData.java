@@ -1,13 +1,11 @@
 package com.tadahtech.mc.staffmanage.length;
 
-import com.google.common.collect.Maps;
 import com.tadahtech.mc.staffmanage.database.ColumnType;
 import com.tadahtech.mc.staffmanage.database.Savable;
 import com.tadahtech.mc.staffmanage.database.Saved;
 import com.tadahtech.mc.staffmanage.player.PlayerPunishmentData;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentType;
 
-import java.util.Map;
 import java.util.UUID;
 
 public class PlayerLengthData implements Savable {
@@ -15,11 +13,14 @@ public class PlayerLengthData implements Savable {
     @Saved(primaryKey = true, columnType = ColumnType.UUID)
     private UUID uuid;
 
+    @Saved(primaryKey = true, columnType = ColumnType.ENUM)
+    private PunishmentType type;
+    
     @Saved
     private String name;
 
-    @Saved(columnType = ColumnType.GSON)
-    private Map<PunishmentType, Integer> lengthIndexes;
+    @Saved(columnType = ColumnType.INTEGER)
+    private int index;
 
     public PlayerLengthData() {
     }
@@ -27,7 +28,8 @@ public class PlayerLengthData implements Savable {
     public PlayerLengthData(PlayerPunishmentData data) {
         this.uuid = data.getUuid();
         this.name = data.getName();
-        this.lengthIndexes = Maps.newHashMap();
+        this.type = data.getType();
+        this.index = 0;
     }
 
     public UUID getUuid() {
@@ -46,20 +48,19 @@ public class PlayerLengthData implements Savable {
         this.name = name;
     }
 
-    public Map<PunishmentType, Integer> getLengthIndexes() {
-        return lengthIndexes;
+    public int getIndex() {
+        return index;
     }
 
-    public int getIndexFor(PunishmentType punishmentType) {
-        Integer index = this.lengthIndexes.get(punishmentType);
-        return index == null ? 0 : index;
+    public void increment() {
+        this.index++;
     }
 
-    public void setIndex(PunishmentType punishmentType, int index) {
-        this.lengthIndexes.put(punishmentType, index);
+    public PunishmentType getType() {
+        return type;
     }
 
-    public void setLengthIndexes(Map<PunishmentType, Integer> lengthIndexes) {
-        this.lengthIndexes = lengthIndexes;
+    public void setType(PunishmentType type) {
+        this.type = type;
     }
 }

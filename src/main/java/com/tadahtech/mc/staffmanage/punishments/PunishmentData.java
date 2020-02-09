@@ -43,6 +43,14 @@ public class PunishmentData {
         if (allowIPBan) {
             slots++;
         }
+
+        if (lengths.get(PunishmentType.TEMP_BAN) != null) {
+            slots++;
+        }
+
+        if (lengths.get(PunishmentType.TEMP_MUTE) != null) {
+            slots++;
+        }
     }
 
     public String getName() {
@@ -72,7 +80,11 @@ public class PunishmentData {
     public PunishmentLength getLengthFor(PunishmentType type, int index) {
         LinkedList<PunishmentLength> lengths = this.lengths.get(type);
 
-        if (lengths == null) {
+        if (lengths == null || lengths.isEmpty()) {
+            return null;
+        }
+
+        if (index >= lengths.size()) {
             return null;
         }
 
@@ -84,7 +96,7 @@ public class PunishmentData {
     }
 
     public ItemStack toItemStack() {
-        ItemBuilder builder = new ItemBuilder(icon).setTitle(Colors.GOLD + getGuiName());
+        ItemBuilder builder = new ItemBuilder(getIcon()).setTitle(Colors.GOLD + getGuiName());
 
         List<String> lore = Lists.newArrayList();
 

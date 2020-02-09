@@ -100,11 +100,13 @@ public class PunishmentManager {
         }
 
         if (length != null) {
-            this.lengthManager.incrementLength(data);
             data.setExpiry(length.toDate());
+
+            System.out.println("incrementing length");
+            this.lengthManager.incrementLength(data);
         }
 
-        String message = StaffManager.getInstance().getChatPrefix() + getMessage(data);
+        String message = getMessage(data);
 
         switch (data.getType()) {
             case BAN:
@@ -117,17 +119,23 @@ public class PunishmentManager {
             case TEMP_MUTE:
             case IP_MUTE:
                 this.muteManager.mute(data);
-                player.sendMessage(message);
+                player.sendMessage(StaffManager.getInstance().getChatPrefix() + message);
                 break;
             default:
-                player.sendMessage(message);
+                player.sendMessage(StaffManager.getInstance().getChatPrefix() + message);
         }
 
         broadcast(data);
         this.sqlManager.save(data);
         this.builderManager.cleanup(data.getInitiatorUUID());
 
-        Bukkit.getPlayer(data.getInitiatorUUID()).sendMessage(getStaff(data));
+        Player sender = Bukkit.getPlayer(data.getInitiatorUUID());
+
+        if (sender == null) {
+            return;
+        }
+
+        sender.sendMessage(getStaff(data));
     }
 
     public void removePunishment(PlayerPunishmentData punishment) {
@@ -138,7 +146,7 @@ public class PunishmentManager {
     }
 
     public String getMessage(PlayerPunishmentData data) {
-        String base = StaffManager.getInstance().getMessagesSection().getString(data.getType().name().toLowerCase());
+        String base = StaffManager.getInstance().getMessagesSection().getString(data.getType().getLabel().toLowerCase());
         base = replacePlaceHolders(data, base);
         return base;
     }
@@ -156,7 +164,7 @@ public class PunishmentManager {
 
         String base = StaffManager.getInstance().getMessagesSection().getString("ingame");
         base = replacePlaceHolders(data, base);
-        Bukkit.broadcastMessage(base);
+        Bukkit.broadcastMessage(StaffManager.getInstance().getChatPrefix() + base);
     }
 
     private String replacePlaceHolders(PlayerPunishmentData data, String base) {
@@ -206,7 +214,7 @@ public class PunishmentManager {
         Map<PunishmentType, LinkedList<PunishmentLength>> lengths = Maps.newHashMap();
 
         for (String l : length.getKeys(false)) {
-            getLengths(subTypes, lengths, l);
+            getLengths(length, lengths, l);
         }
 
         PunishmentData data = new PunishmentData(sub, uiName, icon, allowBan, allowPermMute, allowIpBan, lengths);
@@ -216,18 +224,20 @@ public class PunishmentManager {
         category.add(data);
     }
 
-    private void getLengths(ConfigurationSection subTypes, Map<PunishmentType, LinkedList<PunishmentLength>> lengths, String l) {
+    private void getLengths(ConfigurationSection section, Map<PunishmentType, LinkedList<PunishmentLength>> lengths, String l) {
         PunishmentType type = PunishmentType.getByName(l);
 
         if (type == null) {
-            StaffManager.getInstance().getLogger().severe("No such punishment type: " + l);
             return;
         }
 
-        List<String> times = subTypes.getStringList(l);
+        List<String> times = section.getStringList(l);
 
         if (times == null) {
-            StaffManager.getInstance().getLogger().severe("No list found. What type is it?");
+            return;
+        }
+
+        if (times.isEmpty()) {
             return;
         }
 

@@ -19,10 +19,10 @@ public class RecordEntry implements Savable {
     @Saved(primaryKey = true, columnType = ColumnType.ENUM)
     private RecordEntryType type;
 
-    @Saved
+    @Saved(size = 64)
     private String category;
 
-    @Saved
+    @Saved(size = 64)
     private String subType;
 
     @Saved

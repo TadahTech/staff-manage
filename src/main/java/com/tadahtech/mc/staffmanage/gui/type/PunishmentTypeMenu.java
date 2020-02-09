@@ -32,7 +32,9 @@ public class PunishmentTypeMenu extends Menu {
             buttons[slots[slot++]] = new PunishmentTypeButton(PunishmentType.BAN, this.builder);
         }
 
-        buttons[slots[slot++]] = new PunishmentTypeButton(PunishmentType.TEMP_BAN, this.builder);
+        if (data.getLengthFor(PunishmentType.TEMP_BAN, 0) != null) {
+            buttons[slots[slot++]] = new PunishmentTypeButton(PunishmentType.TEMP_BAN, this.builder);
+        }
 
         if (data.isAllowIPBan()) {
             buttons[slots[slot++]] = new PunishmentTypeButton(PunishmentType.IP_BAN, this.builder);
@@ -42,7 +44,10 @@ public class PunishmentTypeMenu extends Menu {
             buttons[slots[slot++]] = new PunishmentTypeButton(PunishmentType.MUTE, this.builder);
         }
 
-        buttons[slots[slot++]] = new PunishmentTypeButton(PunishmentType.TEMP_MUTE, this.builder);
+        if (data.getLengthFor(PunishmentType.TEMP_MUTE, 0) != null) {
+            buttons[slots[slot++]] = new PunishmentTypeButton(PunishmentType.TEMP_MUTE, this.builder);
+        }
+
         buttons[slots[slot]] = new PunishmentTypeButton(PunishmentType.WARNING, this.builder);
 
 

@@ -28,8 +28,12 @@ public class BanListener implements PunishmentListener {
         String name = event.getName();
 
         Optional<PlayerPunishmentData> banOptional = this.manager.getSQLManager().getPunishment(uuid, PunishmentType.BAN);
+
         if (!banOptional.isPresent()) {
-            return;
+            banOptional = this.manager.getSQLManager().getPunishment(uuid, PunishmentType.TEMP_BAN);
+            if (!banOptional.isPresent()) {
+                return;
+            }
         }
 
         PlayerPunishmentData ban = banOptional.get();

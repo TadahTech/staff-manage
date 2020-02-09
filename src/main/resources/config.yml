@@ -8,6 +8,21 @@ sql:
 chat-prefix: "&6&lHydra&f&l(Punishments) &e» &f"
 
 categories:
+  hacking:
+    icon: DIAMOND_SWORD
+    gui-name: "Hacking / Cheating"
+    types:
+      kill-aura:
+        icon: WATER_BUCKET
+        gui-name: "Kill Aura"
+        allow-ban: true
+        allow-perm-mute: false
+        allow-ip-ban: true
+        lengths:
+          tempban:
+          - "2h"
+          - "12h"
+          - "24h"
   chat:
     icon: BOOK_AND_QUILL
     gui-name: "Chat Offenses"
@@ -40,6 +55,14 @@ messages:
 
               Purchase an unban at\n
               https://store.hydracraft.net/category/1422152\n\n
+
+              Do you feel this was a mistake?\n
+              Appeal on the forums:\n
+              http://hydracraft.net/forums"
+
+  ipban: "&c&lPERMANENTLY IP BANNED\n
+              You have been IP Banned from HydraCraft\n
+              Reason: %category% - %subCat%\n\n
 
               Do you feel this was a mistake?\n
               Appeal on the forums:\n

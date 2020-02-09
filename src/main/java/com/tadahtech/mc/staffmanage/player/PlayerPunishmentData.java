@@ -23,10 +23,10 @@ public class PlayerPunishmentData implements Savable {
     @Saved(columnType = ColumnType.DATE)
     private Date expiry;
 
-    @Saved
+    @Saved(size = 64)
     private String category;
 
-    @Saved
+    @Saved(size = 64)
     private String subType;
 
     @Saved
@@ -90,9 +90,9 @@ public class PlayerPunishmentData implements Savable {
             return "";
         }
 
-        long time = UtilTime.getTimeLeft(this.timestamp.getTime(), this.expiry.getTime());
+        long time = UtilTime.getTimeLeft(this.expiry.getTime());
 
-        return UtilTime.format(new Date(time));
+        return UtilTime.toSentence(time);
     }
 
     public String getTime() {

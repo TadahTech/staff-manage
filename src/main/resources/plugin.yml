@@ -7,3 +7,4 @@ description: A staff management and assistance plugin
 
 commands:
   punish:
+  pardon:

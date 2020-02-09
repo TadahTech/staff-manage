@@ -17,6 +17,7 @@ public class PunishmentSQLManager extends GenericSQLManager<PlayerPunishmentData
 
     public Optional<PlayerPunishmentData> getPunishment(UUID uuid, PunishmentType type) {
         PlayerPunishmentData data = this.getByPrimary(uuid, type);
+
         if (data == null) {
             return Optional.empty();
         }

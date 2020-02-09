@@ -10,17 +10,17 @@ import java.util.Map;
 
 public enum PunishmentType {
 
-    BAN(null, true, "banned", "Ban", Material.BARRIER),
+    BAN("ban", true, "Banned", "Ban", Material.BARRIER),
     TEMP_BAN("tempban", true, "Temporarily banned", "Temp Ban", Material.REDSTONE),
 
     IP_BAN("ipban", true, "IP banned", "IP Ban", Material.ANVIL),
     IP_MUTE("ipmute", true, "IP Muted", "IP Mute", Material.ENCHANTED_BOOK),
 
-    MUTE(null, true, "muted", "Mute", Material.BOOK),
+    MUTE("mute", true, "Muted", "Mute", Material.BOOK),
     TEMP_MUTE("tempmute", false, "Temporarily Muted", "Temp Mute", Material.GHAST_TEAR),
 
-    KICK(null, false, "kicked", "Kick", Material.GOLD_BOOTS),
-    WARNING(null, false, "warned", "Warn", Material.PAPER);
+    KICK("kick", false, "Kicked", "Kick", Material.GOLD_BOOTS),
+    WARNING("warn", false, "Warned", "Warn", Material.PAPER);
 
     private static final Map<String, PunishmentType> TYPE_MAP = Maps.newHashMap();
 
@@ -62,5 +62,9 @@ public enum PunishmentType {
 
     public ItemStack toItemStack() {
         return new ItemBuilder(this.material).setTitle(Colors.GOLD + this.uiName).build();
+    }
+
+    public boolean isTemporary() {
+        return this == TEMP_BAN || this == TEMP_MUTE;
     }
 }
