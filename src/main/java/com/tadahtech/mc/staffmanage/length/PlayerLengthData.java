@@ -3,9 +3,9 @@ package com.tadahtech.mc.staffmanage.length;
 import com.tadahtech.mc.staffmanage.database.ColumnType;
 import com.tadahtech.mc.staffmanage.database.Savable;
 import com.tadahtech.mc.staffmanage.database.Saved;
-import com.tadahtech.mc.staffmanage.player.PlayerPunishmentData;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentType;
 
+import java.util.Date;
 import java.util.UUID;
 
 public class PlayerLengthData implements Savable {
@@ -13,54 +13,82 @@ public class PlayerLengthData implements Savable {
     @Saved(primaryKey = true, columnType = ColumnType.UUID)
     private UUID uuid;
 
-    @Saved(primaryKey = true, columnType = ColumnType.ENUM)
-    private PunishmentType type;
-    
     @Saved
     private String name;
 
     @Saved(columnType = ColumnType.INTEGER)
-    private int index;
+    private int typeCounter;
+
+    @Saved(columnType = ColumnType.ENUM)
+    private PunishmentType lastType;
+
+    @Saved(columnType = ColumnType.INTEGER)
+    private int lengthCounter;
+
+    @Saved(columnType = ColumnType.DATE)
+    private Date lastUpdated;
 
     public PlayerLengthData() {
     }
 
-    public PlayerLengthData(PlayerPunishmentData data) {
-        this.uuid = data.getUuid();
-        this.name = data.getName();
-        this.type = data.getType();
-        this.index = 0;
+    public PlayerLengthData(UUID uuid, String name) {
+        this.uuid = uuid;
+        this.name = name;
+        this.typeCounter = 0;
+        this.lengthCounter = 0;
     }
 
     public UUID getUuid() {
         return uuid;
     }
 
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
-    }
-
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void addPunishment(PunishmentType type) {
+        this.lengthCounter++;
+        this.lastUpdated = new Date();
+
+        if (type == lastType) {
+            System.out.println("Type is the same");
+            return;
+        }
+
+        System.out.println("Type is " + type + " Stored Type is " + lastType);
+
+        this.lengthCounter = 0;
+        this.typeCounter++;
+        setLastType(type);
     }
 
-    public int getIndex() {
-        return index;
+    public int getTypeCounter() {
+        return typeCounter;
     }
 
-    public void increment() {
-        this.index++;
+    public void setLastType(PunishmentType lastType) {
+        this.lastType = lastType;
     }
 
-    public PunishmentType getType() {
-        return type;
+    public int getLengthCounter() {
+        return lengthCounter;
     }
 
-    public void setType(PunishmentType type) {
-        this.type = type;
+    public Date getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void reset() {
+        this.lastType = null;
+        this.typeCounter = 0;
+        this.lengthCounter = 0;
+    }
+
+    public void setLastUpdated() {
+        this.lastUpdated = new Date();
+    }
+
+    public void incrementLength() {
+        this.lengthCounter++;
     }
 }

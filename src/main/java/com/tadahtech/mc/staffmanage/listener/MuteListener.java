@@ -67,7 +67,10 @@ public class MuteListener implements PunishmentListener {
             return;
         }
 
-        player.sendMessage(this.punishmentManager.getMessage(mute));
+        String message = this.punishmentManager.getMessage(mute);
+        message = message.replace("%next%", this.punishmentManager.getLengthManager().getNext(mute));
+
+        player.sendMessage(message);
 
         event.setCancelled(true);
 

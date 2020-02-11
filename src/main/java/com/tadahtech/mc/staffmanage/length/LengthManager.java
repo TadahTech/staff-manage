@@ -7,18 +7,21 @@ import com.tadahtech.mc.staffmanage.player.PlayerPunishmentData;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentCategory;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentData;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentType;
+import com.tadahtech.mc.staffmanage.util.UtilTime;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class LengthManager implements PunishmentListener {
 
     private LengthSQLManager sqlManager;
     private PunishmentManager punishmentManager;
-    private Map<UUID, Map<PunishmentType, PlayerLengthData>> playerData;
+    private Map<UUID, PlayerLengthData> playerData;
 
     public LengthManager(PunishmentManager punishmentManager) {
         this.punishmentManager = punishmentManager;
@@ -32,86 +35,128 @@ public class LengthManager implements PunishmentListener {
             return;
         }
 
-        Map<PunishmentType, PlayerLengthData> lengthDataMap = this.playerData.get(lengthData.getUuid());
-
-        if (lengthDataMap == null) {
-            lengthDataMap = Maps.newHashMap();
-        }
-
-        lengthDataMap.put(lengthData.getType(), lengthData);
-
-        this.playerData.put(lengthData.getUuid(), lengthDataMap);
+        this.playerData.put(lengthData.getUuid(), lengthData);
     }
 
-    public PlayerLengthData getData(UUID uuid, PunishmentType type) {
-        Map<PunishmentType, PlayerLengthData> lengthDataMap = this.playerData.get(uuid);
-
-        if (lengthDataMap == null) {
-            return null;
-        }
-
-        return lengthDataMap.get(type);
+    public PlayerLengthData getData(UUID uuid) {
+        return this.playerData.get(uuid);
     }
 
     @EventHandler
     public void onLogin(AsyncPlayerPreLoginEvent event) {
         UUID uuid = event.getUniqueId();
-
-        for (PunishmentType type : PunishmentType.values()) {
-            if (!type.isTemporary()) {
-                continue;
+        this.sqlManager.getLengthData(uuid, lengthData -> {
+            if (lengthData == null) {
+                return;
             }
-            this.sqlManager.getLengthData(uuid, type, this::addData);
-        }
+
+            Date timestamp = lengthData.getLastUpdated();
+            Date day = new Date(timestamp.getTime() + TimeUnit.DAYS.toMillis(1));
+
+            if (UtilTime.hasElapsed(timestamp.getTime(), day.getTime())) {
+                lengthData.reset();
+            }
+
+            this.addData(lengthData);
+        });
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
 
-        for (PunishmentType type : PunishmentType.values()) {
-            if (!type.isTemporary()) {
-                continue;
-            }
-            PlayerLengthData data = getData(uuid, type);
+        PlayerLengthData data = getData(uuid);
 
-            if (data == null) {
-                continue;
-            }
-
-            this.sqlManager.save(data);
+        if (data == null) {
+            return;
         }
 
+        this.sqlManager.save(data);
     }
 
     public PunishmentLength getLength(PlayerPunishmentData data) {
-        PlayerLengthData lengthData = getData(data.getUuid(), data.getType());
-
-        if (lengthData == null) {
-            lengthData = new PlayerLengthData(data);
-        }
-
-        int currentIndex = lengthData.getIndex();
-
         PunishmentCategory category = this.punishmentManager.getCategory(data.getCategory());
         PunishmentData punishmentData = category.getDataFor(data.getSubType());
+        PlayerLengthData lengthData = getData(data.getUuid());
 
-        addData(lengthData);
+        int typeIndex = 0;
+        int lengthIndex = 0;
 
-        return punishmentData.getLengthFor(data.getType(), currentIndex);
+        if (lengthData == null) {
+            lengthData = new PlayerLengthData(data.getUuid(), data.getName());
+            addData(lengthData);
+
+            PunishmentType type = punishmentData.getTpeFor(typeIndex);
+            lengthData.setLastType(type);
+            data.setType(type);
+            lengthData.setLastUpdated();
+
+            return punishmentData.getLengthFor(type, lengthIndex);
+        } else {
+            typeIndex = lengthData.getTypeCounter();
+            lengthIndex = lengthData.getLengthCounter();
+        }
+
+        PunishmentType type = punishmentData.getTpeFor(typeIndex);
+        PunishmentLength length = punishmentData.getLengthFor(type, lengthIndex);
+
+        if (length == null) {
+            PunishmentType next = punishmentData.getNext(type);
+
+            if (next == null) {
+                data.setType(type);
+                return null;
+            }
+
+            type = next;
+
+            lengthData.addPunishment(next);
+            length = punishmentData.getLengthFor(next, 0);
+
+            if (length != null) {
+                lengthData.incrementLength();
+            }
+
+        } else {
+            lengthData.addPunishment(type);
+        }
+
+        data.setType(type);
+        return length;
     }
 
-    public void incrementLength(PlayerPunishmentData data) {
-        System.out.println("Getting lengthData");
-        PlayerLengthData lengthData = getData(data.getUuid(), data.getType());
+    public String getNext(PlayerPunishmentData data) {
+        PunishmentCategory category = this.punishmentManager.getCategory(data.getCategory());
+        PunishmentData punishmentData = category.getDataFor(data.getSubType());
+        PlayerLengthData lengthData = getData(data.getUuid());
 
-        int index = lengthData.getIndex();
+        if (lengthData == null) {
+            return null;
+        }
 
-        System.out.println("Current index: " + data.getType() + " ::  " + index);
-        lengthData.increment();
+        int typeIndex = lengthData.getTypeCounter();
+        int lengthIndex = lengthData.getLengthCounter() + 1;
 
-        System.out.println("New index: " + data.getType() + " ::  " + lengthData.getIndex());
-        addData(lengthData);
+        PunishmentType type = punishmentData.getTpeFor(typeIndex);
+        PunishmentLength length = punishmentData.getLengthFor(type, lengthIndex);
+
+        if (length == null) {
+            PunishmentType next = punishmentData.getNext(type);
+
+            if (next == null) {
+                data.setType(type);
+                return null;
+            }
+
+            length = punishmentData.getLengthFor(next, 0);
+
+            if (length == null) {
+                return next.getMessageVersion();
+            }
+
+            return length.toSentence();
+        } else {
+            return length.toSentence();
+        }
     }
-
 }

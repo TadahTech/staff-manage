@@ -1,5 +1,6 @@
 package com.tadahtech.mc.staffmanage.gui.subCat;
 
+import com.tadahtech.mc.staffmanage.StaffManager;
 import com.tadahtech.mc.staffmanage.menu.Menu;
 import com.tadahtech.mc.staffmanage.menu.buttons.MenuButton;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentCategory;
@@ -33,5 +34,10 @@ public class PunishmentSubTypeMenu extends Menu {
         }
 
         return buttons;
+    }
+
+    @Override
+    public void close(Player player) {
+        StaffManager.getInstance().getPunishmentManager().getBuilderManager().cleanup(player.getUniqueId());
     }
 }

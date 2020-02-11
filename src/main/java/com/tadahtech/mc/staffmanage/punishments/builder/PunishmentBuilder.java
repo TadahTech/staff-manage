@@ -64,8 +64,6 @@ public class PunishmentBuilder {
         data.setCategory(this.category.getName());
         data.setSubType(this.data.getName());
 
-        data.setType(this.type);
-
         StaffManager.getInstance().getPunishmentManager().punish(data);
     }
 }

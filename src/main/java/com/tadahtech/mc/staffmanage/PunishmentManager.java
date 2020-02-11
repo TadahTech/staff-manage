@@ -51,7 +51,6 @@ public class PunishmentManager {
         new BanListener(this);
         new MuteListener(this);
 
-
         setupData(staffManager.getConfig());
     }
 
@@ -88,25 +87,12 @@ public class PunishmentManager {
 
         PunishmentLength length = this.lengthManager.getLength(data);
 
-        if (length == null) {
-            switch (data.getType()) {
-                case TEMP_BAN:
-                    data.setType(PunishmentType.BAN);
-                    break;
-                case TEMP_MUTE:
-                    data.setType(PunishmentType.MUTE);
-                    break;
-            }
-        }
-
         if (length != null) {
             data.setExpiry(length.toDate());
-
-            System.out.println("incrementing length");
-            this.lengthManager.incrementLength(data);
         }
 
         String message = getMessage(data);
+        message = message.replace("%next%", this.lengthManager.getNext(data));
 
         switch (data.getType()) {
             case BAN:
@@ -119,7 +105,7 @@ public class PunishmentManager {
             case TEMP_MUTE:
             case IP_MUTE:
                 this.muteManager.mute(data);
-                player.sendMessage(StaffManager.getInstance().getChatPrefix() + message);
+                player.sendMessage(message);
                 break;
             default:
                 player.sendMessage(StaffManager.getInstance().getChatPrefix() + message);
@@ -132,6 +118,10 @@ public class PunishmentManager {
         Player sender = Bukkit.getPlayer(data.getInitiatorUUID());
 
         if (sender == null) {
+            return;
+        }
+
+        if (sender.getUniqueId() == player.getUniqueId()) {
             return;
         }
 
@@ -206,9 +196,10 @@ public class PunishmentManager {
 
         Material icon = Material.getMaterial(section.getString("icon"));
         String uiName = ChatColor.translateAlternateColorCodes('&', section.getString("gui-name"));
-        boolean allowBan = section.getBoolean("allow-ban");
-        boolean allowPermMute = section.getBoolean("allow-perm-mute");
-        boolean allowIpBan = section.getBoolean("allow-ip-ban");
+
+        List<String> punishments = section.getStringList("punishments");
+
+        LinkedList<PunishmentType> types = Lists.newLinkedList(punishments.stream().map(PunishmentType::getByName).collect(Collectors.toList()));
 
         ConfigurationSection length = section.getConfigurationSection("lengths");
         Map<PunishmentType, LinkedList<PunishmentLength>> lengths = Maps.newHashMap();
@@ -217,7 +208,7 @@ public class PunishmentManager {
             getLengths(length, lengths, l);
         }
 
-        PunishmentData data = new PunishmentData(sub, uiName, icon, allowBan, allowPermMute, allowIpBan, lengths);
+        PunishmentData data = new PunishmentData(sub, uiName, icon, types, lengths);
 
         StaffManager.getInstance().getLogger().info("Added new PunishmentData " + data.getName());
 
@@ -233,11 +224,7 @@ public class PunishmentManager {
 
         List<String> times = section.getStringList(l);
 
-        if (times == null) {
-            return;
-        }
-
-        if (times.isEmpty()) {
+        if (times == null || times.isEmpty()) {
             return;
         }
 
@@ -246,4 +233,7 @@ public class PunishmentManager {
     }
 
 
+    public LengthManager getLengthManager() {
+        return this.lengthManager;
+    }
 }

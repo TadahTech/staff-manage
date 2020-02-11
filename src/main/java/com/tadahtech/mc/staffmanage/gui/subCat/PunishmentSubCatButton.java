@@ -1,6 +1,5 @@
 package com.tadahtech.mc.staffmanage.gui.subCat;
 
-import com.tadahtech.mc.staffmanage.gui.type.PunishmentTypeMenu;
 import com.tadahtech.mc.staffmanage.menu.buttons.MenuButton;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentData;
 import com.tadahtech.mc.staffmanage.punishments.builder.PunishmentBuilder;
@@ -22,6 +21,7 @@ public class PunishmentSubCatButton extends MenuButton {
     public void onClick(Player player, ClickType clickType, int slot) {
         builder.setData(this.data);
 
-        new PunishmentTypeMenu(builder).open(player);
+        builder.punish();
+        player.closeInventory();
     }
 }

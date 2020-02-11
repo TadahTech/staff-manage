@@ -1,5 +1,6 @@
 package com.tadahtech.mc.staffmanage.menu;
 
+import com.tadahtech.mc.staffmanage.menu.buttons.IconButton;
 import com.tadahtech.mc.staffmanage.menu.buttons.MenuButton;
 import com.tadahtech.mc.staffmanage.util.SchedulerUtils;
 import com.tadahtech.mc.staffmanage.util.item.ItemBuilder;
@@ -81,6 +82,10 @@ public abstract class Menu {
      * @return The setup button array
      */
     protected abstract MenuButton[] setUp(Player player);
+
+    protected void close(Player player) {
+
+    }
 
     public MenuButton[] getButtons() {
         return buttons;
@@ -176,9 +181,6 @@ public abstract class Menu {
     }
 
     protected MenuButton[] pane(MenuButton[] buttons) {
-        return buttons;
-
-        /*
         for (int i = 0; i < 9; i++) {
             if (buttons[i] == null) {
                 buttons[i] = new IconButton(PANE);
@@ -197,7 +199,7 @@ public abstract class Menu {
             }
         }
         return buttons;
-        */
+
     }
 
     public void onClose(Player player) {
@@ -216,6 +218,7 @@ public abstract class Menu {
             break;
         }
 
+        close(player);
         remove(player.getUniqueId());
     }
 

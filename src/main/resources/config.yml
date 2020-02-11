@@ -15,14 +15,15 @@ categories:
       kill-aura:
         icon: WATER_BUCKET
         gui-name: "Kill Aura"
-        allow-ban: true
-        allow-perm-mute: false
-        allow-ip-ban: true
+        punishments:
+        - "tempban"
+        - "ban"
         lengths:
           tempban:
           - "2h"
           - "12h"
           - "24h"
+
   chat:
     icon: BOOK_AND_QUILL
     gui-name: "Chat Offenses"
@@ -30,20 +31,15 @@ categories:
       spam:
         icon: PAPER
         gui-name: "Spam"
-        allow-ban: true
-        allow-perm-mute: true
-        allow-ip-ban: false
+        punishments:
+        - "warning"
+        - "tempmute"
+        - "mute"
         lengths:
           tempmute:
-          - "1h0m0s"
-          - "1h0m0s"
-          - "1h0m0s"
-          - "1h0m0s"
-          tempban:
-          - "1h0m0s"
-          - "1h0m0s"
-          - "1h0m0s"
-          - "1h0m0s"
+          - "30m"
+          - "1h"
+          - "12h"
 
 messages:
   staff: "You have %type% %player% for %category% - %subCat%"
@@ -82,7 +78,7 @@ messages:
               http://hydracraft.net/forums"
   
   mute: "###################################################\n
-                  You’ve been &c&bPERMANENTLY&r muted by %staff%\n
+                  You have been &c&bPERMANENTLY&r muted by %staff%\n
                   Reason: %category% - %subCat%\n\n
 
                   Get an unmute at\n
@@ -92,7 +88,7 @@ messages:
         ###################################################"
 
   tempmute: "###################################################\n
-                 You’ve been muted for %time% by %staff%\n
+                 You have been muted for %timeRemaining% by %staff%\n
                  Reason: Reason: %category% - %subCat%\n\n
 
                  Next Punishment: %next%\n

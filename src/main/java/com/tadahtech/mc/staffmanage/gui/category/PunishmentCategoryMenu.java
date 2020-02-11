@@ -35,4 +35,9 @@ public class PunishmentCategoryMenu extends Menu {
 
         return buttons;
     }
+
+    @Override
+    public void close(Player player) {
+        StaffManager.getInstance().getPunishmentManager().getBuilderManager().cleanup(player.getUniqueId());
+    }
 }

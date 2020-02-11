@@ -16,41 +16,15 @@ public class PunishmentData {
     private String name;
     private String guiName;
     private Material icon;
-    private boolean allowBan;
-    private boolean allowMute;
-    private boolean allowIPBan;
+    private LinkedList<PunishmentType> types;
     private Map<PunishmentType, LinkedList<PunishmentLength>> lengths;
-    private int slots;
 
-    public PunishmentData(String name, String guiName, Material icon, boolean allowBan, boolean allowMute, boolean allowIPBan, Map<PunishmentType, LinkedList<PunishmentLength>> lengths) {
+    public PunishmentData(String name, String guiName, Material icon, LinkedList<PunishmentType> types, Map<PunishmentType, LinkedList<PunishmentLength>> lengths) {
         this.name = name;
         this.guiName = guiName;
+        this.types = types;
         this.icon = icon;
-        this.allowBan = allowBan;
-        this.allowMute = allowMute;
-        this.allowIPBan = allowIPBan;
         this.lengths = lengths;
-        this.slots = 4;
-
-        if (allowBan) {
-            slots++;
-        }
-
-        if (allowMute) {
-            slots++;
-        }
-
-        if (allowIPBan) {
-            slots++;
-        }
-
-        if (lengths.get(PunishmentType.TEMP_BAN) != null) {
-            slots++;
-        }
-
-        if (lengths.get(PunishmentType.TEMP_MUTE) != null) {
-            slots++;
-        }
     }
 
     public String getName() {
@@ -61,20 +35,13 @@ public class PunishmentData {
         return icon;
     }
 
-    public boolean isAllowBan() {
-        return allowBan;
+    public PunishmentType getTpeFor(int index) {
+        return this.types.get(index);
     }
 
-    public boolean isAllowMute() {
-        return allowMute;
-    }
-
-    public boolean isAllowIPBan() {
-        return allowIPBan;
-    }
-
-    public Map<PunishmentType, LinkedList<PunishmentLength>> getLengths() {
-        return lengths;
+    public PunishmentType getNext(PunishmentType current) {
+        int index = this.types.indexOf(current) + 1;
+        return this.types.get(index);
     }
 
     public PunishmentLength getLengthFor(PunishmentType type, int index) {
@@ -91,28 +58,24 @@ public class PunishmentData {
         return lengths.get(index);
     }
 
-    public int getSlots() {
-        return slots;
-    }
-
     public ItemStack toItemStack() {
         ItemBuilder builder = new ItemBuilder(getIcon()).setTitle(Colors.GOLD + getGuiName());
 
         List<String> lore = Lists.newArrayList();
 
         lore.add(" ");
-        lore.add(itemize("Allow Perm Ban", this.allowBan));
-        lore.add(itemize("Allow Perm Mute", this.allowMute));
-        lore.add(itemize("Allow IP Ban", this.allowIPBan));
+        lore.add(Colors.GOLD + Colors.BOLD + Colors.UNDERLINE + "Punishments");
+        lore.add(" ");
+
+        for (PunishmentType type : this.types) {
+            lore.add(Colors.DARK_GRAY + "- " + Colors.WHITE + type.getUiName());
+        }
+
         lore.add(" ");
 
         builder.setLore(lore);
 
         return builder.build();
-    }
-
-    protected static String itemize(String label, boolean value) {
-        return Colors.GOLD + label + ": " + (value ? (Colors.GREEN + "True") : (Colors.RED + "False"));
     }
 
     public String getGuiName() {
