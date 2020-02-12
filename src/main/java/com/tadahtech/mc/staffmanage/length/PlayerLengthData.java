@@ -91,4 +91,8 @@ public class PlayerLengthData implements Savable {
     public void incrementLength() {
         this.lengthCounter++;
     }
+
+    public PunishmentType getLastType() {
+        return this.lastType;
+    }
 }

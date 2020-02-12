@@ -5,6 +5,8 @@ sql:
   database: punishments
   port: 3306
 
+record-expire-time: "7d"
+
 chat-prefix: "&6&lHydra&f&l(Punishments) &e» &f"
 
 categories:

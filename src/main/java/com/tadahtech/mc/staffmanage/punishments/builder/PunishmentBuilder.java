@@ -1,6 +1,7 @@
 package com.tadahtech.mc.staffmanage.punishments.builder;
 
 import com.tadahtech.mc.staffmanage.StaffManager;
+import com.tadahtech.mc.staffmanage.length.PunishmentLength;
 import com.tadahtech.mc.staffmanage.player.PlayerPunishmentData;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentCategory;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentData;
@@ -16,6 +17,7 @@ public class PunishmentBuilder {
     private UUID initiatorUUID;
     private String playerName;
     private UUID playerUUID;
+    private PunishmentLength currentLength;
 
     private PunishmentCategory category;
     private PunishmentData data;
@@ -26,6 +28,26 @@ public class PunishmentBuilder {
         this.initiatorUUID = initiator.getUniqueId();
         this.playerUUID = player.getUniqueId();
         this.playerName = player.getName();
+    }
+
+    public String getInitiatorName() {
+        return initiatorName;
+    }
+
+    public UUID getInitiatorUUID() {
+        return initiatorUUID;
+    }
+
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    public UUID getPlayerUUID() {
+        return playerUUID;
+    }
+
+    public PunishmentCategory getCategory() {
+        return category;
     }
 
     public void setCategory(PunishmentCategory category) {
@@ -65,5 +87,14 @@ public class PunishmentBuilder {
         data.setSubType(this.data.getName());
 
         StaffManager.getInstance().getPunishmentManager().punish(data);
+    }
+
+    public PunishmentLength getCurrentLength() {
+        return currentLength;
+    }
+
+    public PunishmentBuilder setCurrentLength(PunishmentLength currentLength) {
+        this.currentLength = currentLength;
+        return this;
     }
 }

@@ -18,6 +18,7 @@ import com.tadahtech.mc.staffmanage.record.RecordEntry;
 import com.tadahtech.mc.staffmanage.record.RecordEntryType;
 import com.tadahtech.mc.staffmanage.record.RecordSQLManager;
 import com.tadahtech.mc.staffmanage.util.Colors;
+import com.tadahtech.mc.staffmanage.util.UtilTime;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -39,6 +40,7 @@ public class PunishmentManager {
     private LengthManager lengthManager;
     private MuteManager muteManager;
     private Map<String, PunishmentCategory> categoryMap;
+    private long recordExpireTime;
 
     public PunishmentManager(StaffManager staffManager) {
         this.sqlManager = new PunishmentSQLManager();
@@ -51,7 +53,11 @@ public class PunishmentManager {
         new BanListener(this);
         new MuteListener(this);
 
-        setupData(staffManager.getConfig());
+        FileConfiguration config = staffManager.getConfig();
+
+        this.recordExpireTime = UtilTime.toMillis(config.getString("record-expire-time"));
+
+        setupData(config);
     }
 
     public Set<PunishmentCategory> getAll() {
@@ -85,7 +91,18 @@ public class PunishmentManager {
             throw new IllegalArgumentException("that player is not online");
         }
 
+        Player sender = Bukkit.getPlayer(data.getInitiatorUUID());
+
+        if (sender == null) {
+            throw new IllegalArgumentException("that sender is not online");
+        }
+
         PunishmentLength length = this.lengthManager.getLength(data);
+
+        if (!sender.hasPermission("staffmanager." + data.getType().getLabel())) {
+            sender.sendMessage(Colors.RED + "You cannot execute a " + data.getType() + "! Please get a higher ranked staff member.");
+            return;
+        }
 
         if (length != null) {
             data.setExpiry(length.toDate());
@@ -114,12 +131,6 @@ public class PunishmentManager {
         broadcast(data);
         this.sqlManager.save(data);
         this.builderManager.cleanup(data.getInitiatorUUID());
-
-        Player sender = Bukkit.getPlayer(data.getInitiatorUUID());
-
-        if (sender == null) {
-            return;
-        }
 
         if (sender.getUniqueId() == player.getUniqueId()) {
             return;
@@ -235,5 +246,9 @@ public class PunishmentManager {
 
     public LengthManager getLengthManager() {
         return this.lengthManager;
+    }
+
+    public long getRecordExpireTime() {
+        return recordExpireTime;
     }
 }

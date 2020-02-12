@@ -7,6 +7,8 @@ import com.tadahtech.mc.staffmanage.player.PlayerPunishmentData;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentCategory;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentData;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentType;
+import com.tadahtech.mc.staffmanage.record.RecordEntry;
+import com.tadahtech.mc.staffmanage.record.RecordEntryType;
 import com.tadahtech.mc.staffmanage.util.UtilTime;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -15,7 +17,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class LengthManager implements PunishmentListener {
 
@@ -45,20 +46,25 @@ public class LengthManager implements PunishmentListener {
     @EventHandler
     public void onLogin(AsyncPlayerPreLoginEvent event) {
         UUID uuid = event.getUniqueId();
-        this.sqlManager.getLengthData(uuid, lengthData -> {
-            if (lengthData == null) {
-                return;
-            }
+        PlayerLengthData data = this.sqlManager.getLengthData(uuid);
 
-            Date timestamp = lengthData.getLastUpdated();
-            Date day = new Date(timestamp.getTime() + TimeUnit.DAYS.toMillis(1));
+        if (data == null) {
+            System.out.println("Data is null");
+            return;
+        }
 
-            if (UtilTime.hasElapsed(timestamp.getTime(), day.getTime())) {
-                lengthData.reset();
-            }
+        Date updated = data.getLastUpdated();
+        Date future = new Date(updated.getTime() + this.punishmentManager.getRecordExpireTime());
 
-            this.addData(lengthData);
-        });
+        if (UtilTime.hasElapsed(updated.getTime(), future.getTime())) {
+            System.out.println("Resetting data");
+            data.reset();
+
+            RecordEntry entry = new RecordEntry(data.getUuid(), data.getName(), RecordEntryType.RESET_LENGTH, "", "", "", null, new Date());
+            this.punishmentManager.getRecordSQLManager().saveEntry(entry);
+        }
+
+        addData(data);
     }
 
     @EventHandler
@@ -86,7 +92,7 @@ public class LengthManager implements PunishmentListener {
             lengthData = new PlayerLengthData(data.getUuid(), data.getName());
             addData(lengthData);
 
-            PunishmentType type = punishmentData.getTpeFor(typeIndex);
+            PunishmentType type = punishmentData.getTypeFor(typeIndex);
             lengthData.setLastType(type);
             data.setType(type);
             lengthData.setLastUpdated();
@@ -97,7 +103,7 @@ public class LengthManager implements PunishmentListener {
             lengthIndex = lengthData.getLengthCounter();
         }
 
-        PunishmentType type = punishmentData.getTpeFor(typeIndex);
+        PunishmentType type = punishmentData.getTypeFor(typeIndex);
         PunishmentLength length = punishmentData.getLengthFor(type, lengthIndex);
 
         if (length == null) {
@@ -135,9 +141,9 @@ public class LengthManager implements PunishmentListener {
         }
 
         int typeIndex = lengthData.getTypeCounter();
-        int lengthIndex = lengthData.getLengthCounter() + 1;
+        int lengthIndex = lengthData.getLengthCounter();
 
-        PunishmentType type = punishmentData.getTpeFor(typeIndex);
+        PunishmentType type = punishmentData.getTypeFor(typeIndex);
         PunishmentLength length = punishmentData.getLengthFor(type, lengthIndex);
 
         if (length == null) {
@@ -158,5 +164,14 @@ public class LengthManager implements PunishmentListener {
         } else {
             return length.toSentence();
         }
+    }
+
+    public PunishmentLength getLength(PunishmentData data, PlayerLengthData lengthData) {
+        int typeIndex = lengthData.getTypeCounter();
+        int lengthIndex = lengthData.getLengthCounter() - 1;
+
+        PunishmentType type = data.getTypeFor(typeIndex);
+
+        return data.getLengthFor(type, lengthIndex);
     }
 }

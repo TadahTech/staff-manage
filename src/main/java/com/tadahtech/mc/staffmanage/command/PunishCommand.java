@@ -1,5 +1,6 @@
 package com.tadahtech.mc.staffmanage.command;
 
+import com.tadahtech.mc.staffmanage.PunishmentManager;
 import com.tadahtech.mc.staffmanage.StaffManager;
 import com.tadahtech.mc.staffmanage.gui.category.PunishmentCategoryMenu;
 import com.tadahtech.mc.staffmanage.punishments.builder.PunishmentBuilder;
@@ -38,7 +39,9 @@ public class PunishCommand implements CommandExecutor {
             return true;
         }
 
-        PunishmentBuilder builder = StaffManager.getInstance().getPunishmentManager().getBuilderManager().makeBuilder(player, target);
+        PunishmentManager manager = StaffManager.getInstance().getPunishmentManager();
+
+        PunishmentBuilder builder = manager.getBuilderManager().makeBuilder(player, target);
 
         new PunishmentCategoryMenu(builder).open(player);
         return true;

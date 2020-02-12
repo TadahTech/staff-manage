@@ -48,10 +48,6 @@ public final class StaffManager extends JavaPlugin {
         getLogger().info("Started Staff Manager...");
     }
 
-    @Override
-    public void onDisable() {
-    }
-
     private void loadSQL(FileConfiguration config) {
         ConfigurationSection sql = config.getConfigurationSection("sql");
 

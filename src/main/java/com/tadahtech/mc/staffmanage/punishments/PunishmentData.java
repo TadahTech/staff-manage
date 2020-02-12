@@ -35,12 +35,21 @@ public class PunishmentData {
         return icon;
     }
 
-    public PunishmentType getTpeFor(int index) {
+    public PunishmentType getTypeFor(int index) {
         return this.types.get(index);
     }
 
     public PunishmentType getNext(PunishmentType current) {
+        if (current == null) {
+            return null;
+        }
+
         int index = this.types.indexOf(current) + 1;
+
+        if (index == this.types.size()) {
+            return null;
+        }
+
         return this.types.get(index);
     }
 
@@ -58,7 +67,7 @@ public class PunishmentData {
         return lengths.get(index);
     }
 
-    public ItemStack toItemStack() {
+    public ItemStack toItemStack(PunishmentLength currentLength, PunishmentType currentType) {
         ItemBuilder builder = new ItemBuilder(getIcon()).setTitle(Colors.GOLD + getGuiName());
 
         List<String> lore = Lists.newArrayList();
@@ -67,8 +76,74 @@ public class PunishmentData {
         lore.add(Colors.GOLD + Colors.BOLD + Colors.UNDERLINE + "Punishments");
         lore.add(" ");
 
-        for (PunishmentType type : this.types) {
-            lore.add(Colors.DARK_GRAY + "- " + Colors.WHITE + type.getUiName());
+        PunishmentType nextType = getNext(currentType);
+        boolean onNext = false;
+
+        for (int t = 0; t < this.types.size(); t++) {
+            PunishmentType type = this.types.get(t);
+
+            if (nextType == null) {
+                if (t == 0) {
+                    lore.add(Colors.DARK_GRAY + "- " + Colors.GOLD + type.getUiName());
+                } else {
+                    lore.add(Colors.DARK_GRAY + "- " + Colors.WHITE + type.getUiName());
+                }
+            } else {
+                if (nextType == type) {
+                    lore.add(Colors.DARK_GRAY + "- " + Colors.GOLD + type.getUiName());
+                    onNext = true;
+                } else {
+                    onNext = false;
+                    if (type == currentType) {
+                        lore.add(Colors.DARK_GRAY + "- " + Colors.GREEN + type.getUiName());
+                    } else {
+                        lore.add(Colors.DARK_GRAY + "- " + Colors.DARK_GRAY + type.getUiName());
+                    }
+                }
+            }
+
+            if (type == PunishmentType.TEMP_MUTE || type == PunishmentType.TEMP_BAN) {
+                LinkedList<PunishmentLength> lengths = this.lengths.get(type);
+
+                if (lengths == null) {
+                    continue;
+                }
+
+                boolean doneNext = false;
+                for (int i = 0; i < lengths.size(); i++) {
+                    PunishmentLength length = lengths.get(i);
+
+                    if (currentLength == null) {
+                        if (onNext && !doneNext) {
+                            doneNext = true;
+                            lore.add(Colors.DARK_GRAY + "  - " + Colors.GREEN + length.toSentence());
+                            continue;
+                        }
+                        lore.add(Colors.DARK_GRAY + "  - " + Colors.DARK_GRAY + length.toSentence());
+                        continue;
+                    }
+
+                    if (length.getMillis() < currentLength.getMillis()) {
+                        lore.add(Colors.DARK_GRAY + "  - " + Colors.RED + length.toSentence());
+                        continue;
+                    }
+
+                    if (length.getMillis() == currentLength.getMillis()) {
+                        lore.add(Colors.DARK_GRAY + "  - " + Colors.GREEN + length.toSentence());
+
+                        if ((i + 1) != lengths.size()) {
+                            PunishmentLength next = lengths.get(i + 1);
+                            lore.add(Colors.DARK_GRAY + "  - " + Colors.GOLD + next.toSentence());
+                            i++;
+                        }
+
+                        continue;
+                    }
+
+                    lore.add(Colors.DARK_GRAY + "  - " + Colors.WHITE + length.toSentence());
+                }
+            }
+            lore.add(" ");
         }
 
         lore.add(" ");
