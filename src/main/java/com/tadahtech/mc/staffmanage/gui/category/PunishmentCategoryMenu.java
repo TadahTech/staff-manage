@@ -25,7 +25,7 @@ public class PunishmentCategoryMenu extends Menu {
     @Override
     protected MenuButton[] setUp(Player player) {
         int lines = (int) (2 + Math.ceil((double) this.size / 4.0));
-        MenuButton[] buttons = new MenuButton[9 * lines];
+        MenuButton[] buttons = new MenuButton[(9 * lines) > 54 ? 54 : (9 * lines)];
 
         int[] slots = UtilUI.getIndicesFor(this.size, 1, 4, 0);
 

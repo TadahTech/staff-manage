@@ -21,7 +21,7 @@ public class PunishmentSubCatButton extends MenuButton {
         this.builder = builder;
 
         LengthManager lengthManager = StaffManager.getInstance().getPunishmentManager().getLengthManager();
-        PlayerLengthData lengthData = lengthManager.getData(builder.getPlayerUUID());
+        PlayerLengthData lengthData = lengthManager.getData(builder.getPlayerUUID(), data.getName());
 
         if (lengthData == null) {
             builder.setCurrentLength(null);

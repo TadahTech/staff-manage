@@ -1,3 +1,5 @@
+debug: false
+
 sql:
   host: localhost
   user: root

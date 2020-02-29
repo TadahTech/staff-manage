@@ -20,6 +20,7 @@ public final class StaffManager extends JavaPlugin {
     private PunishmentManager punishmentManager;
     private ConfigurationSection messagesSection;
     private String chatPrefix;
+    private boolean debug;
 
     public static StaffManager getInstance() {
         return instance;
@@ -36,6 +37,11 @@ public final class StaffManager extends JavaPlugin {
         this.chatPrefix = ChatColor.translateAlternateColorCodes('&', config.getString("chat-prefix"));
 
         this.messagesSection = config.getConfigurationSection("messages");
+        this.debug = config.getBoolean("debug", true);
+
+        if (debug) {
+            getLogger().info("Enabled debugging. This will output a lot of shit, to turn it off, add \"debug: false\" to the config.");
+        }
 
         loadSQL(config);
         this.punishmentManager = new PunishmentManager(this);
@@ -79,10 +85,17 @@ public final class StaffManager extends JavaPlugin {
         };
     }
 
+    public void debug(String message) {
+        if (!debug) {
+            return;
+        }
+
+        getLogger().info(message);
+    }
+
     public SQLConfig getSqlConfig() {
         return sqlConfig;
     }
-
 
     public PunishmentManager getPunishmentManager() {
         return punishmentManager;

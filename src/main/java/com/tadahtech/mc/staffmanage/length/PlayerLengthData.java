@@ -1,5 +1,6 @@
 package com.tadahtech.mc.staffmanage.length;
 
+import com.tadahtech.mc.staffmanage.StaffManager;
 import com.tadahtech.mc.staffmanage.database.ColumnType;
 import com.tadahtech.mc.staffmanage.database.Savable;
 import com.tadahtech.mc.staffmanage.database.Saved;
@@ -12,6 +13,9 @@ public class PlayerLengthData implements Savable {
 
     @Saved(primaryKey = true, columnType = ColumnType.UUID)
     private UUID uuid;
+
+    @Saved(primaryKey = true, size = 64)
+    private String subCategory;
 
     @Saved
     private String name;
@@ -47,15 +51,13 @@ public class PlayerLengthData implements Savable {
     }
 
     public void addPunishment(PunishmentType type) {
+        StaffManager.getInstance().debug("adding length to " + type + " for " + name);
         this.lengthCounter++;
         this.lastUpdated = new Date();
 
         if (type == lastType) {
-            System.out.println("Type is the same");
             return;
         }
-
-        System.out.println("Type is " + type + " Stored Type is " + lastType);
 
         this.lengthCounter = 0;
         this.typeCounter++;
@@ -94,5 +96,13 @@ public class PlayerLengthData implements Savable {
 
     public PunishmentType getLastType() {
         return this.lastType;
+    }
+
+    public String getSubCategory() {
+        return subCategory;
+    }
+
+    public void setSubCategory(String subCategory) {
+        this.subCategory = subCategory;
     }
 }

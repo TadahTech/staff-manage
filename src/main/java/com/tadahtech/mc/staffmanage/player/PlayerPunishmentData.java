@@ -29,6 +29,9 @@ public class PlayerPunishmentData implements Savable {
     @Saved(size = 64)
     private String subType;
 
+    @Saved(size = 64)
+    private String subTypePretty;
+
     @Saved
     private String initiatorName;
 
@@ -133,5 +136,13 @@ public class PlayerPunishmentData implements Savable {
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getSubTypePretty() {
+        return subTypePretty;
+    }
+
+    public void setSubTypePretty(String subTypePretty) {
+        this.subTypePretty = subTypePretty;
     }
 }

@@ -1,6 +1,7 @@
 package com.tadahtech.mc.staffmanage.length;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.tadahtech.mc.staffmanage.PunishmentManager;
 import com.tadahtech.mc.staffmanage.listener.PunishmentListener;
 import com.tadahtech.mc.staffmanage.player.PlayerPunishmentData;
@@ -16,13 +17,14 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public class LengthManager implements PunishmentListener {
 
     private LengthSQLManager sqlManager;
     private PunishmentManager punishmentManager;
-    private Map<UUID, PlayerLengthData> playerData;
+    private Map<UUID, Map<String, PlayerLengthData>> playerData;
 
     public LengthManager(PunishmentManager punishmentManager) {
         this.punishmentManager = punishmentManager;
@@ -31,66 +33,86 @@ public class LengthManager implements PunishmentListener {
         startListening();
     }
 
-    public void addData(PlayerLengthData lengthData) {
+    public void addData(PlayerLengthData lengthData, PunishmentData data) {
         if (lengthData == null) {
             return;
         }
 
-        this.playerData.put(lengthData.getUuid(), lengthData);
+        lengthData.setSubCategory(data.getName());
+        Map<String, PlayerLengthData> dataMap = Maps.newHashMap();
+        dataMap.put(data.getName(), lengthData);
+
+        this.playerData.put(lengthData.getUuid(), dataMap);
     }
 
-    public PlayerLengthData getData(UUID uuid) {
-        return this.playerData.get(uuid);
+    public Set<PlayerLengthData> getAll(UUID uuid) {
+        if (this.playerData.get(uuid) == null) {
+            return null;
+        }
+
+        return Sets.newHashSet(this.playerData.get(uuid).values());
+    }
+
+    public PlayerLengthData getData(UUID uuid, String name) {
+        if (this.playerData.get(uuid) == null) {
+            return null;
+        }
+
+        return this.playerData.get(uuid).get(name);
     }
 
     @EventHandler
     public void onLogin(AsyncPlayerPreLoginEvent event) {
         UUID uuid = event.getUniqueId();
-        PlayerLengthData data = this.sqlManager.getLengthData(uuid);
 
-        if (data == null) {
-            System.out.println("Data is null");
-            return;
-        }
+        this.punishmentManager.getAll().forEach(category -> {
+            category.getPunishments().values().forEach(punishmentData -> {
+                PlayerLengthData data = this.sqlManager.getLengthData(uuid, punishmentData);
 
-        Date updated = data.getLastUpdated();
-        Date future = new Date(updated.getTime() + this.punishmentManager.getRecordExpireTime());
+                if (data == null) {
+                    return;
+                }
 
-        if (UtilTime.hasElapsed(updated.getTime(), future.getTime())) {
-            System.out.println("Resetting data");
-            data.reset();
+                Date updated = data.getLastUpdated();
+                Date future = new Date(updated.getTime() + this.punishmentManager.getRecordExpireTime());
 
-            RecordEntry entry = new RecordEntry(data.getUuid(), data.getName(), RecordEntryType.RESET_LENGTH, "", "", "", null, new Date());
-            this.punishmentManager.getRecordSQLManager().saveEntry(entry);
-        }
+                if (UtilTime.hasElapsed(updated.getTime(), future.getTime())) {
+                    data.reset();
 
-        addData(data);
+                    RecordEntry entry = new RecordEntry(data.getUuid(), data.getName(), RecordEntryType.RESET_LENGTH, "", "", "", null, new Date());
+                    this.punishmentManager.getRecordSQLManager().saveEntry(entry);
+                }
+
+                addData(data, punishmentData);
+            });
+        });
+
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
 
-        PlayerLengthData data = getData(uuid);
+        Set<PlayerLengthData> data = getAll(uuid);
 
-        if (data == null) {
+        if (data == null || data.isEmpty()) {
             return;
         }
 
-        this.sqlManager.save(data);
+        data.forEach(lengthData -> this.sqlManager.save(lengthData));
     }
 
     public PunishmentLength getLength(PlayerPunishmentData data) {
         PunishmentCategory category = this.punishmentManager.getCategory(data.getCategory());
         PunishmentData punishmentData = category.getDataFor(data.getSubType());
-        PlayerLengthData lengthData = getData(data.getUuid());
+        PlayerLengthData lengthData = getData(data.getUuid(), punishmentData.getName());
 
         int typeIndex = 0;
         int lengthIndex = 0;
 
         if (lengthData == null) {
             lengthData = new PlayerLengthData(data.getUuid(), data.getName());
-            addData(lengthData);
+            addData(lengthData, punishmentData);
 
             PunishmentType type = punishmentData.getTypeFor(typeIndex);
             lengthData.setLastType(type);
@@ -134,7 +156,7 @@ public class LengthManager implements PunishmentListener {
     public String getNext(PlayerPunishmentData data) {
         PunishmentCategory category = this.punishmentManager.getCategory(data.getCategory());
         PunishmentData punishmentData = category.getDataFor(data.getSubType());
-        PlayerLengthData lengthData = getData(data.getUuid());
+        PlayerLengthData lengthData = getData(data.getUuid(), punishmentData.getName());
 
         if (lengthData == null) {
             return null;
@@ -150,7 +172,6 @@ public class LengthManager implements PunishmentListener {
             PunishmentType next = punishmentData.getNext(type);
 
             if (next == null) {
-                data.setType(type);
                 return null;
             }
 
@@ -168,7 +189,7 @@ public class LengthManager implements PunishmentListener {
 
     public PunishmentLength getLength(PunishmentData data, PlayerLengthData lengthData) {
         int typeIndex = lengthData.getTypeCounter();
-        int lengthIndex = lengthData.getLengthCounter() - 1;
+        int lengthIndex = (lengthData.getLengthCounter() <= 0) ? 0 : (lengthData.getLengthCounter() - 1);
 
         PunishmentType type = data.getTypeFor(typeIndex);
 

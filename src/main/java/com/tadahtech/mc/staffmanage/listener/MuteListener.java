@@ -68,7 +68,9 @@ public class MuteListener implements PunishmentListener {
         }
 
         String message = this.punishmentManager.getMessage(mute);
-        message = message.replace("%next%", this.punishmentManager.getLengthManager().getNext(mute));
+        if (message.contains("%next%") && this.punishmentManager.getLengthManager().getNext(mute) != null) {
+            message = message.replace("%next%", this.punishmentManager.getLengthManager().getNext(mute));
+        }
 
         player.sendMessage(message);
 

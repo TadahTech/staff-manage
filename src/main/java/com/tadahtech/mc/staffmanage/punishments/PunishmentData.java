@@ -54,6 +54,10 @@ public class PunishmentData {
     }
 
     public PunishmentLength getLengthFor(PunishmentType type, int index) {
+        if (this.lengths == null || this.lengths.isEmpty()) {
+            return null;
+        }
+
         LinkedList<PunishmentLength> lengths = this.lengths.get(type);
 
         if (lengths == null || lengths.isEmpty()) {
@@ -155,5 +159,9 @@ public class PunishmentData {
 
     public String getGuiName() {
         return guiName;
+    }
+
+    public void setLengths(Map<PunishmentType, LinkedList<PunishmentLength>> lengths) {
+        this.lengths = lengths;
     }
 }

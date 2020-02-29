@@ -6,6 +6,7 @@ import com.tadahtech.mc.staffmanage.player.PlayerPunishmentData;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentCategory;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentData;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentType;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.Date;
@@ -85,6 +86,7 @@ public class PunishmentBuilder {
 
         data.setCategory(this.category.getName());
         data.setSubType(this.data.getName());
+        data.setSubTypePretty(ChatColor.stripColor(this.data.getGuiName()));
 
         StaffManager.getInstance().getPunishmentManager().punish(data);
     }
