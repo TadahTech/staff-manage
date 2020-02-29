@@ -28,7 +28,10 @@ public class FreezeCommand implements CommandExecutor {
 
         if (UtilFreeze.getFrozenPlayers().contains(target.getUniqueId())) {
             UtilFreeze.unfreeze(target);
+            player.sendMessage(Colors.GREEN + "Unfroze " + target.getName());
         } else {
+            player.sendMessage(Colors.GOLD + "Froze " + target.getName());
+            player.sendMessage(Colors.GRAY + "Run /freeze " + target.getName() + " to unfreeze the player.");
             UtilFreeze.freeze(target, target.getLocation());
         }
 

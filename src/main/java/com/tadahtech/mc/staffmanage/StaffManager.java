@@ -1,5 +1,6 @@
 package com.tadahtech.mc.staffmanage;
 
+import com.tadahtech.mc.staffmanage.command.FreezeCommand;
 import com.tadahtech.mc.staffmanage.command.PardonCommand;
 import com.tadahtech.mc.staffmanage.command.PunishCommand;
 import com.tadahtech.mc.staffmanage.database.SQLConfig;
@@ -50,6 +51,7 @@ public final class StaffManager extends JavaPlugin {
 
         getCommand("punish").setExecutor(new PunishCommand());
         getCommand("pardon").setExecutor(new PardonCommand());
+        getCommand("freeze").setExecutor(new FreezeCommand());
 
         getLogger().info("Started Staff Manager...");
     }
