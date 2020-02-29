@@ -1,9 +1,13 @@
 package com.tadahtech.mc.staffmanage;
 
+import com.tadahtech.mc.staffmanage.command.CheckCommand;
 import com.tadahtech.mc.staffmanage.command.FreezeCommand;
+import com.tadahtech.mc.staffmanage.command.HelpCommand;
+import com.tadahtech.mc.staffmanage.command.HistoryCommand;
 import com.tadahtech.mc.staffmanage.command.PardonCommand;
 import com.tadahtech.mc.staffmanage.command.PunishCommand;
 import com.tadahtech.mc.staffmanage.database.SQLConfig;
+import com.tadahtech.mc.staffmanage.listener.StaffChatListener;
 import com.tadahtech.mc.staffmanage.menu.listeners.MenuListener;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
@@ -48,10 +52,14 @@ public final class StaffManager extends JavaPlugin {
         this.punishmentManager = new PunishmentManager(this);
 
         new MenuListener();
+        new StaffChatListener();
 
         getCommand("punish").setExecutor(new PunishCommand());
         getCommand("pardon").setExecutor(new PardonCommand());
         getCommand("freeze").setExecutor(new FreezeCommand());
+        getCommand("phistory").setExecutor(new HistoryCommand());
+        getCommand("pcheck").setExecutor(new CheckCommand());
+        getCommand("phelp").setExecutor(new HelpCommand());
 
         getLogger().info("Started Staff Manager...");
     }

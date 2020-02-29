@@ -355,13 +355,21 @@ public class UtilText {
     }
 
     public static String createLine(ChatColor color) {
-        return " " + color.toString() + ChatColor.STRIKETHROUGH + createEndingFill(" ", " ");
+        return createLine(color.toString());
+    }
+
+    public static String createLine(String color) {
+        return " " + color + ChatColor.STRIKETHROUGH + createEndingFill(" ", " ");
     }
 
     public static String createLineCenteredMessage(ChatColor lineColor, String center) {
+        return createLineCenteredMessage(lineColor.toString(), center);
+    }
+
+    public static String createLineCenteredMessage(String lineColor, String center) {
         center = " " + center + " ";
-        String left = " " + lineColor.toString() + ChatColor.STRIKETHROUGH + createCenterFill(center + " ", " ") + ChatColor.RESET;
-        String right = lineColor.toString() + ChatColor.STRIKETHROUGH + createCenterFill(center, " ") + ChatColor.RESET;
+        String left = " " + lineColor + ChatColor.STRIKETHROUGH + createCenterFill(center + " ", " ") + ChatColor.RESET;
+        String right = lineColor + ChatColor.STRIKETHROUGH + createCenterFill(center, " ") + ChatColor.RESET;
         return left + center + right;
     }
 

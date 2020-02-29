@@ -16,11 +16,32 @@ public class MuteManager {
     }
 
     public void mute(PlayerPunishmentData data) {
+        if (isMuted(data.getUuid())) {
+            PlayerPunishmentData mute = getMute(data.getUuid());
+
+            if (data.isTemporary() && !mute.isTemporary()) {
+                return;
+            }
+
+            if (mute.isTemporary() && data.isTemporary()) {
+                if (data.getExpiry().getTime() < mute.getExpiry().getTime()) {
+                    return;
+                }
+            }
+        }
         this.mutes.put(data.getUuid(), data);
     }
 
+    private PlayerPunishmentData getMute(UUID uuid) {
+        return this.mutes.get(uuid);
+    }
+
+    private boolean isMuted(UUID uuid) {
+        return this.mutes.containsKey(uuid);
+    }
+
     public boolean isMuted(Player player) {
-        return this.mutes.containsKey(player.getUniqueId());
+        return isMuted(player.getUniqueId());
     }
 
     public PlayerPunishmentData getMute(Player player) {

@@ -9,3 +9,6 @@ commands:
   punish:
   pardon:
   freeze:
+  pcheck:
+  phistory:
+  phelp:

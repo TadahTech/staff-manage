@@ -31,6 +31,13 @@ public class PunishmentBuilder {
         this.playerName = player.getName();
     }
 
+    public PunishmentBuilder(Player initiator, UUID targetUUID, String targetName) {
+        this.initiatorName = initiator.getName();
+        this.initiatorUUID = initiator.getUniqueId();
+        this.playerUUID = targetUUID;
+        this.playerName = targetName;
+    }
+
     public String getInitiatorName() {
         return initiatorName;
     }

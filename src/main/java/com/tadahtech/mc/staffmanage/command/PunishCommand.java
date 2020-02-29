@@ -6,10 +6,13 @@ import com.tadahtech.mc.staffmanage.gui.category.PunishmentCategoryMenu;
 import com.tadahtech.mc.staffmanage.punishments.builder.PunishmentBuilder;
 import com.tadahtech.mc.staffmanage.util.Colors;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 public class PunishCommand implements CommandExecutor {
 
@@ -34,14 +37,34 @@ public class PunishCommand implements CommandExecutor {
 
         Player target = Bukkit.getPlayer(args[0]);
 
+        UUID uuid;
+        String name;
+
         if (target == null) {
-            player.sendMessage(Colors.RED + "Invalid player name");
-            return true;
+            OfflinePlayer offlinePlayer;
+
+            String arg = args[0];
+
+            try {
+                offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(arg));
+            } catch (Exception e) {
+                offlinePlayer = Bukkit.getOfflinePlayer(args[0]);
+            }
+
+            if (offlinePlayer == null) {
+                sender.sendMessage(Colors.RED + "Invalid Player!");
+                return true;
+            }
+
+            uuid = offlinePlayer.getUniqueId();
+            name = offlinePlayer.getName();
+        } else {
+            uuid = target.getUniqueId();
+            name = target.getName();
         }
 
         PunishmentManager manager = StaffManager.getInstance().getPunishmentManager();
-
-        PunishmentBuilder builder = manager.getBuilderManager().makeBuilder(player, target);
+        PunishmentBuilder builder = manager.getBuilderManager().makeBuilder(player, uuid, name);
 
         new PunishmentCategoryMenu(builder).open(player);
         return true;

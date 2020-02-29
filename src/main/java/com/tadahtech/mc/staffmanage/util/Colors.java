@@ -2,12 +2,6 @@ package com.tadahtech.mc.staffmanage.util;
 
 import net.md_5.bungee.api.ChatColor;
 
-/**
- * This is simply here because IntelliJ annoys the shit out of me
- * with using both md_5's chat colors, and Bukkit's.
- *
- * @author Timothy Andis (TadahTech) on 5/28/2016.
- */
 public class Colors {
 
     public static final String BLUE = ChatColor.BLUE.toString();
@@ -36,18 +30,10 @@ public class Colors {
     public static final String RESET = ChatColor.RESET.toString();
     public static final String MAGIC = ChatColor.MAGIC.toString();
 
-    public static final String CHAT = WHITE;
     public static final String ELEMENT = BLUE;
     public static final String COUNT = YELLOW;
     public static final String TIME = ELEMENT;
-    public static final String ITEM = YELLOW;
-    public static final String SKILL = GREEN;
-    public static final String LINK = GREEN;
-    public static final String LOOT = YELLOW;
-    public static final String GAME = AQUA;
     public static final String MENU_ITEM = GREEN + BOLD;
-    public static final String MENU_TITLE = BLACK + BOLD;
     public static final String LORE = GRAY;
-    public static final String COMMAND = BLUE;
     public static final String PLAYER_NAME = GREEN;
 }

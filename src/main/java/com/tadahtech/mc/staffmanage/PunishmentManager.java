@@ -15,7 +15,6 @@ import com.tadahtech.mc.staffmanage.punishments.PunishmentSQLManager;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentType;
 import com.tadahtech.mc.staffmanage.punishments.builder.PunishmentBuilderManager;
 import com.tadahtech.mc.staffmanage.record.RecordEntry;
-import com.tadahtech.mc.staffmanage.record.RecordEntryType;
 import com.tadahtech.mc.staffmanage.record.RecordSQLManager;
 import com.tadahtech.mc.staffmanage.util.Colors;
 import com.tadahtech.mc.staffmanage.util.UtilTime;
@@ -131,6 +130,9 @@ public class PunishmentManager {
                 player.sendMessage(StaffManager.getInstance().getChatPrefix() + message);
         }
 
+        RecordEntry entry = new RecordEntry(data);
+        this.getRecordSQLManager().saveEntry(entry);
+
         broadcast(data);
         this.sqlManager.save(data);
         this.builderManager.cleanup(data.getInitiatorUUID());
@@ -145,7 +147,7 @@ public class PunishmentManager {
     public void removePunishment(PlayerPunishmentData punishment) {
         this.getSQLManager().deletePunishment(punishment.getUuid(), punishment.getType());
 
-        RecordEntry entry = new RecordEntry(RecordEntryType.REMOVE_EXPIRED, punishment);
+        RecordEntry entry = new RecordEntry(punishment);
         this.getRecordSQLManager().saveEntry(entry);
     }
 

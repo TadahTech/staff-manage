@@ -31,4 +31,10 @@ public class PunishmentBuilderManager {
         this.builderMap.put(player.getUniqueId(), builder);
         return builder;
     }
+
+    public PunishmentBuilder makeBuilder(Player player, UUID targetUUID, String targetName) {
+        PunishmentBuilder builder = new PunishmentBuilder(player, targetUUID, targetName);
+        this.builderMap.put(player.getUniqueId(), builder);
+        return builder;
+    }
 }

@@ -98,6 +98,10 @@ public class PlayerPunishmentData implements Savable {
         return UtilTime.toSentence(time);
     }
 
+    public long getLength() {
+        return this.getExpiry().getTime() - this.getTimestamp().getTime();
+    }
+
     public String getTime() {
         return UtilTime.toTimerSecond(this.expiry.getTime());
     }
