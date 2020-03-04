@@ -2,11 +2,15 @@ package com.tadahtech.mc.staffmanage.record;
 
 public enum RecordEntryType {
 
-    PUNISH,
+    BAN,
+    MUTE,
+    WARNING,
+    KICK,
     UNBAN,
     UNMUTE,
     REMOVE_EXPIRED,
     RESET_LENGTH,
-    OTHER,;
+    OTHER,
+    ;
 
 }

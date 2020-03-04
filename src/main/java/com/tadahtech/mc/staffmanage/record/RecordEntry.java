@@ -8,7 +8,6 @@ import com.tadahtech.mc.staffmanage.lang.ColorFormatting;
 import com.tadahtech.mc.staffmanage.lang.Messaging;
 import com.tadahtech.mc.staffmanage.lang.types.RegularMessage;
 import com.tadahtech.mc.staffmanage.player.PlayerPunishmentData;
-import com.tadahtech.mc.staffmanage.punishments.PunishmentType;
 import com.tadahtech.mc.staffmanage.util.Colors;
 import com.tadahtech.mc.staffmanage.util.UtilText;
 import com.tadahtech.mc.staffmanage.util.UtilTime;
@@ -31,7 +30,7 @@ public class RecordEntry implements Savable {
     private String name;
 
     @Saved(primaryKey = true, columnType = ColumnType.ENUM)
-    private PunishmentType type;
+    private RecordEntryType type;
 
     @Saved(size = 64)
     private String category;
@@ -59,10 +58,10 @@ public class RecordEntry implements Savable {
     }
 
     public RecordEntry(PlayerPunishmentData data) {
-        this(data.getUuid(), data.getName(), data.getType(), data.getCategory(), data.getSubTypePretty(), data.getInitiatorName(), data.getInitiatorUUID(), new Date(), data.getExpiry());
+        this(data.getUuid(), data.getName(), data.getType().getRecord(), data.getCategory(), data.getSubTypePretty(), data.getInitiatorName(), data.getInitiatorUUID(), new Date(), data.getExpiry());
     }
 
-    public RecordEntry(UUID uuid, String name, PunishmentType type, String category, String subType, String initiatorName, UUID initiatorUUID, Date timestamp, Date expiry) {
+    public RecordEntry(UUID uuid, String name, RecordEntryType type, String category, String subType, String initiatorName, UUID initiatorUUID, Date timestamp, Date expiry) {
         this.uuid = uuid;
         this.name = name;
         this.type = type;
@@ -83,7 +82,7 @@ public class RecordEntry implements Savable {
         return name;
     }
 
-    public PunishmentType getType() {
+    public RecordEntryType getType() {
         return type;
     }
 

@@ -79,7 +79,7 @@ public class LengthManager implements PunishmentListener {
                 if (UtilTime.hasElapsed(updated.getTime(), future.getTime())) {
                     data.reset();
 
-                    RecordEntry entry = new RecordEntry(data.getUuid(), data.getName(), RecordEntryType.RESET_LENGTH, "", "", "", null, new Date());
+                    RecordEntry entry = new RecordEntry(data.getUuid(), data.getName(), RecordEntryType.RESET_LENGTH, "", "", "", null, new Date(), null);
                     this.punishmentManager.getRecordSQLManager().saveEntry(entry);
                 }
 

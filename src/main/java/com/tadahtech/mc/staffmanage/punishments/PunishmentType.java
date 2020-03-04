@@ -1,22 +1,23 @@
 package com.tadahtech.mc.staffmanage.punishments;
 
 import com.google.common.collect.Maps;
+import com.tadahtech.mc.staffmanage.record.RecordEntryType;
 
 import java.util.Map;
 
 public enum PunishmentType {
 
-    BAN("ban", true, "Banned", "Ban"),
-    TEMP_BAN("tempban", true, "Temporarily banned", "Temp Ban"),
+    BAN("ban", true, "Banned", "Ban", RecordEntryType.BAN),
+    TEMP_BAN("tempban", true, "Temporarily banned", "Temp Ban", RecordEntryType.BAN),
 
-    IP_BAN("ipban", true, "IP banned", "IP Ban"),
-    IP_MUTE("ipmute", true, "IP Muted", "IP Mute"),
+    IP_BAN("ipban", true, "IP banned", "IP Ban", RecordEntryType.BAN),
+    IP_MUTE("ipmute", true, "IP Muted", "IP Mute", RecordEntryType.MUTE),
 
-    MUTE("mute", true, "Muted", "Mute"),
-    TEMP_MUTE("tempmute", false, "Temporarily Muted", "Temp Mute"),
+    MUTE("mute", true, "Muted", "Mute", RecordEntryType.MUTE),
+    TEMP_MUTE("tempmute", false, "Temporarily Muted", "Temp Mute", RecordEntryType.MUTE),
 
-    KICK("kick", false, "Kicked", "Kick"),
-    WARNING("warning", false, "Warned", "Warn");
+    KICK("kick", false, "Kicked", "Kick", RecordEntryType.KICK),
+    WARNING("warning", false, "Warned", "Warn", RecordEntryType.WARNING);
 
     private static final Map<String, PunishmentType> TYPE_MAP = Maps.newHashMap();
 
@@ -30,12 +31,14 @@ public enum PunishmentType {
     private String messageVersion;
     private String uiName;
     private boolean broadcast;
+    private RecordEntryType record;
 
-    PunishmentType(String label, boolean broadcast, String messageVersion, String uiName) {
+    PunishmentType(String label, boolean broadcast, String messageVersion, String uiName, RecordEntryType record) {
         this.label = label == null ? name() : label;
         this.messageVersion = messageVersion;
         this.broadcast = broadcast;
         this.uiName = uiName;
+        this.record = record;
     }
 
     public static PunishmentType getByName(String s) {
@@ -60,5 +63,9 @@ public enum PunishmentType {
 
     public boolean isMute() {
         return this == MUTE || this == TEMP_MUTE || this == IP_MUTE;
+    }
+
+    public RecordEntryType getRecord() {
+        return this.record;
     }
 }
