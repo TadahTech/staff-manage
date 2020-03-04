@@ -51,4 +51,8 @@ public class MuteManager {
     public void unmute(Player player) {
         this.mutes.remove(player.getUniqueId());
     }
+
+    public void unmute(UUID uuid) {
+        this.mutes.remove(uuid);
+    }
 }

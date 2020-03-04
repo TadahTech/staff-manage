@@ -147,6 +147,10 @@ public class PunishmentManager {
     public void removePunishment(PlayerPunishmentData punishment) {
         this.getSQLManager().deletePunishment(punishment.getUuid(), punishment.getType());
 
+        if (punishment.getType().isMute()) {
+            this.muteManager.unmute(punishment.getUuid());
+        }
+
         RecordEntry entry = new RecordEntry(punishment);
         this.getRecordSQLManager().saveEntry(entry);
     }

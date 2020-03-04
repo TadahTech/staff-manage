@@ -58,4 +58,7 @@ public enum PunishmentType {
         return messageVersion;
     }
 
+    public boolean isMute() {
+        return this == MUTE || this == TEMP_MUTE || this == IP_MUTE;
+    }
 }
