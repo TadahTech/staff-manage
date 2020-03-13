@@ -13,7 +13,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
@@ -188,20 +187,6 @@ public class ItemBuilder {
         return this.setData(color.getWoolData());
     }
 
-    public ItemBuilder setNMSName(String prefix) {
-        if (this.title != null) {
-            return this.setTitle(prefix + this.title);
-        }
-
-        ItemInfo info = ItemNames.itemByType(this.mat, this.data);
-
-        if (info == null) {
-            return this.setTitle(prefix + getNMSName(new ItemStack(this.mat, this.amount, this.data)));
-        }
-
-        return this.setTitle(prefix + info.getName());
-    }
-
     public MaterialData asMaterialData() {
         return new MaterialData(this.mat, (byte) this.data);
     }
@@ -209,7 +194,6 @@ public class ItemBuilder {
     public ItemStack build() {
         ItemStack item = new ItemStack(this.mat, this.amount, this.data);
         if (this.skullCustomTexture != null && this.mat == Material.SKULL_ITEM) {
-            item = SkullTexture.createSkull(this.skullCustomTexture);
             item.setAmount(this.amount);
         }
 
@@ -460,12 +444,4 @@ public class ItemBuilder {
           '}';
     }
 
-    public String getNMSName(ItemStack itemStack) {
-        if (itemStack == null) {
-            return "Air";
-        }
-
-        net.minecraft.server.v1_8_R3.ItemStack stack = CraftItemStack.asNMSCopy(itemStack);
-        return stack.getName();
-    }
 }

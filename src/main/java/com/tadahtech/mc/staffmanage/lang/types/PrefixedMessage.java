@@ -44,7 +44,7 @@ public class PrefixedMessage extends BaseMessage {
         if (prefix == null) {
             return "";
         }
-        return Colors.DARK_GRAY + "[" + ChatColor.translateAlternateColorCodes('&', prefix.toString(locale)) + Colors.DARK_GRAY + "] ";
+        return ChatColor.translateAlternateColorCodes('&', prefix.toString(locale));
     }
 
     public static String formatPrefix(Message prefix) {

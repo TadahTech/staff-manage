@@ -84,12 +84,6 @@ public class PunishmentManager {
     }
 
     public void punish(PlayerPunishmentData data) {
-        Player player = Bukkit.getPlayer(data.getUuid());
-
-        if (player == null) {
-            throw new IllegalArgumentException("that player is not online");
-        }
-
         Player sender = Bukkit.getPlayer(data.getInitiatorUUID());
 
         if (sender == null) {
@@ -113,21 +107,29 @@ public class PunishmentManager {
             message = message.replace("%next%", this.lengthManager.getNext(data));
         }
 
+        Player player = Bukkit.getPlayer(data.getUuid());
+
         switch (data.getType()) {
             case BAN:
             case TEMP_BAN:
             case KICK:
             case IP_BAN:
-                player.kickPlayer(message);
+                if (player != null) {
+                    player.kickPlayer(message);
+                }
                 break;
             case MUTE:
             case TEMP_MUTE:
             case IP_MUTE:
                 this.muteManager.mute(data);
-                player.sendMessage(message);
+                if (player != null) {
+                    player.sendMessage(message);
+                }
                 break;
             default:
-                player.sendMessage(StaffManager.getInstance().getChatPrefix() + message);
+                if (player != null) {
+                    player.sendMessage(StaffManager.getInstance().getChatPrefix() + message);
+                }
         }
 
         RecordEntry entry = new RecordEntry(data);
@@ -137,8 +139,10 @@ public class PunishmentManager {
         this.sqlManager.save(data);
         this.builderManager.cleanup(data.getInitiatorUUID());
 
-        if (sender.getUniqueId() == player.getUniqueId()) {
-            return;
+        if (player != null) {
+            if (sender.getUniqueId() == player.getUniqueId()) {
+                return;
+            }
         }
 
         sender.sendMessage(getStaff(data));
@@ -191,27 +195,17 @@ public class PunishmentManager {
 
     private void setupData(FileConfiguration config) {
         ConfigurationSection categories = config.getConfigurationSection("categories");
-        debug("Total categories: " + categories.getKeys(false).size());
-        debug("Looping through categories...");
         for (String s : categories.getKeys(false)) {
-            debug("=============================== " + s + " CATEGORY DEBUG ===============================");
             ConfigurationSection section = categories.getConfigurationSection(s);
 
             Material catIcon = Material.getMaterial(section.getString("icon"));
-            debug("Icon found: " + catIcon);
-            if (catIcon == null) {
-                debug("no icon found for the item " + section.getString("icon"));
-            }
 
             String guiName = ChatColor.translateAlternateColorCodes('&', section.getString("gui-name"));
-            debug("Gui Name: " + guiName);
 
             PunishmentCategory category = new PunishmentCategory(guiName, catIcon);
             ConfigurationSection subTypes = section.getConfigurationSection("types");
-            debug("Found sub types total " + subTypes.getKeys(false).size());
 
             for (String sub : subTypes.getKeys(false)) {
-                debug("Generating sub-type data");
                 generateSubTypes(category, subTypes, sub);
             }
 
@@ -223,69 +217,48 @@ public class PunishmentManager {
 
     private void generateSubTypes(PunishmentCategory category, ConfigurationSection subTypes, String sub) {
         ConfigurationSection section = subTypes.getConfigurationSection(sub);
-        debug("------------- " + sub + " SUB TYPE DEBUG -------------");
         Material icon = Material.getMaterial(section.getString("icon"));
 
-        debug("Found icon " + icon);
-        if (icon == null) {
-            debug("not material found by the name " + section.getString("icon"));
-        }
-
         String uiName = ChatColor.translateAlternateColorCodes('&', section.getString("gui-name"));
-        debug("UI Name: " + uiName);
 
         List<String> punishments = section.getStringList("punishments");
-        debug("Found " + punishments.size() + " total punishments");
-        LinkedList<PunishmentType> types = Lists.newLinkedList(punishments.stream().map(PunishmentType::getByName).collect(Collectors.toList()));
-        debug("Converted " + types.size() + " to PunishmentTypes ");
+        LinkedList<PunishmentType> types = punishments.stream().map(PunishmentType::getByName).collect(Collectors.toCollection(Lists::newLinkedList));
         ConfigurationSection length = section.getConfigurationSection("lengths");
 
         PunishmentData data = new PunishmentData(sub, uiName, icon, types, null);
 
         if (length == null || length.getKeys(false).isEmpty()) {
-            debug("No lengths found, moving on");
             category.add(data);
             StaffManager.getInstance().getLogger().info("Added new PunishmentData " + data.getName());
-            debug("------------- END " + sub + " SUB TYPE DEBUG -------------");
             return;
         }
 
-        debug("Found " + length.getKeys(false).size() + " lengths.");
         Map<PunishmentType, LinkedList<PunishmentLength>> lengths = Maps.newHashMap();
 
         for (String l : length.getKeys(false)) {
-            debug("Adding length " + l);
             getLengths(length, lengths, l);
         }
 
         data.setLengths(lengths);
         StaffManager.getInstance().getLogger().info("Added new PunishmentData " + data.getName());
-        debug("------------- END " + sub + " SUB TYPE DEBUG -------------");
 
         category.add(data);
     }
 
     private void getLengths(ConfigurationSection section, Map<PunishmentType, LinkedList<PunishmentLength>> lengths, String l) {
         PunishmentType type = PunishmentType.getByName(l);
-        debug("Type " + type);
         if (type == null) {
             return;
         }
 
         List<String> times = section.getStringList(l);
 
-        debug("Times " + times);
-
         if (times == null || times.isEmpty()) {
             return;
         }
 
-        LinkedList<PunishmentLength> linkedList = Lists.newLinkedList(times.stream().map(PunishmentLength::new).collect(Collectors.toList()));
+        LinkedList<PunishmentLength> linkedList = times.stream().map(PunishmentLength::new).collect(Collectors.toCollection(Lists::newLinkedList));
         lengths.put(type, linkedList);
-    }
-
-    private void debug(String message) {
-        StaffManager.getInstance().debug(message);
     }
 
     public LengthManager getLengthManager() {

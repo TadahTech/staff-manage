@@ -1,14 +1,18 @@
 package com.tadahtech.mc.staffmanage;
 
 import com.tadahtech.mc.staffmanage.command.CheckCommand;
+import com.tadahtech.mc.staffmanage.command.DupeIPCommand;
 import com.tadahtech.mc.staffmanage.command.FreezeCommand;
 import com.tadahtech.mc.staffmanage.command.HelpCommand;
 import com.tadahtech.mc.staffmanage.command.HistoryCommand;
 import com.tadahtech.mc.staffmanage.command.PardonCommand;
 import com.tadahtech.mc.staffmanage.command.PunishCommand;
 import com.tadahtech.mc.staffmanage.database.SQLConfig;
+import com.tadahtech.mc.staffmanage.dupeip.DupeIPManager;
 import com.tadahtech.mc.staffmanage.listener.StaffChatListener;
 import com.tadahtech.mc.staffmanage.menu.listeners.MenuListener;
+import com.tadahtech.mc.staffmanage.redis.PunishmentsRedisManager;
+import com.tadahtechnologies.redis.RedisConfig;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -24,6 +28,8 @@ public final class StaffManager extends JavaPlugin {
     private SQLConfig sqlConfig;
     private PunishmentManager punishmentManager;
     private ConfigurationSection messagesSection;
+    private PunishmentsRedisManager redisManager;
+    private DupeIPManager dupeIPManager;
     private String chatPrefix;
     private boolean debug;
 
@@ -49,7 +55,9 @@ public final class StaffManager extends JavaPlugin {
         }
 
         loadSQL(config);
+        loadRedis(config);
         this.punishmentManager = new PunishmentManager(this);
+        this.dupeIPManager = new DupeIPManager();
 
         new MenuListener();
         new StaffChatListener();
@@ -60,8 +68,42 @@ public final class StaffManager extends JavaPlugin {
         getCommand("phistory").setExecutor(new HistoryCommand());
         getCommand("pcheck").setExecutor(new CheckCommand());
         getCommand("phelp").setExecutor(new HelpCommand());
+        getCommand("dupeip").setExecutor(new DupeIPCommand());
 
         getLogger().info("Started Staff Manager...");
+    }
+
+    private void loadRedis(FileConfiguration config) {
+        ConfigurationSection redis = config.getConfigurationSection("redis");
+
+        if (redis == null) {
+            return;
+        }
+
+        String host = redis.getString("host");
+        int port = redis.getInt("port");
+
+        RedisConfig redisConfig = new RedisConfig() {
+            @Override
+            public String getHost() {
+                return host;
+            }
+
+            @Override
+            public int getPort() {
+                return port;
+            }
+
+            @Override
+            public String getPassword() {
+                return null;
+            }
+
+        };
+
+        this.redisManager = new PunishmentsRedisManager(redisConfig);
+        this.redisManager.subscribe();
+        debug("Enabled redis!");
     }
 
     private void loadSQL(FileConfiguration config) {
@@ -117,5 +159,13 @@ public final class StaffManager extends JavaPlugin {
 
     public String getChatPrefix() {
         return chatPrefix;
+    }
+
+    public PunishmentsRedisManager getRedisManager() {
+        return this.redisManager;
+    }
+
+    public DupeIPManager getDupeIPManager() {
+        return dupeIPManager;
     }
 }
