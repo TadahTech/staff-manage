@@ -7,6 +7,7 @@ import com.tadahtech.mc.staffmanage.command.HelpCommand;
 import com.tadahtech.mc.staffmanage.command.HistoryCommand;
 import com.tadahtech.mc.staffmanage.command.PardonCommand;
 import com.tadahtech.mc.staffmanage.command.PunishCommand;
+import com.tadahtech.mc.staffmanage.command.PunishServerCommand;
 import com.tadahtech.mc.staffmanage.database.SQLConfig;
 import com.tadahtech.mc.staffmanage.dupeip.DupeIPManager;
 import com.tadahtech.mc.staffmanage.listener.StaffChatListener;
@@ -69,6 +70,7 @@ public final class StaffManager extends JavaPlugin {
         getCommand("pcheck").setExecutor(new CheckCommand());
         getCommand("phelp").setExecutor(new HelpCommand());
         getCommand("dupeip").setExecutor(new DupeIPCommand());
+        getCommand("serverpunish").setExecutor(new PunishServerCommand());
 
         getLogger().info("Started Staff Manager...");
     }

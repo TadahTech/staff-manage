@@ -7,7 +7,6 @@ import com.tadahtech.mc.staffmanage.punishments.PunishmentType;
 import com.tadahtech.mc.staffmanage.util.Colors;
 import com.tadahtech.mc.staffmanage.util.UtilConcurrency;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -38,35 +37,28 @@ public class PardonCommand implements CommandExecutor {
 
         Player target = Bukkit.getPlayer(args[0]);
 
-        UUID uuid;
+        UUID test = UUID.randomUUID();
+        UUID targetUUID;
 
         if (target == null) {
-            OfflinePlayer offlinePlayer;
-
-            String arg = args[0];
-
-            try {
-                offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(arg));
-            } catch (Exception e) {
-                offlinePlayer = Bukkit.getOfflinePlayer(args[0]);
-            }
-
-            if (offlinePlayer == null) {
-                sender.sendMessage(Colors.RED + "Invalid Player!");
-                return true;
-            }
-
-            uuid = offlinePlayer.getUniqueId();
+            targetUUID = test;
         } else {
-            uuid = target.getUniqueId();
+            targetUUID = target.getUniqueId();
         }
 
+        UUID finalTargetUUID = targetUUID;
+
         UtilConcurrency.runAsync(() -> {
+            UUID uuid = finalTargetUUID;
             PunishmentType type = PunishmentType.getByName(args[1]);
 
             if (type == null) {
                 sender.sendMessage(Colors.RED + "Invalid type: " + args[1]);
                 return;
+            }
+
+            if (uuid == test) {
+                uuid = Bukkit.getOfflinePlayer(args[0]).getUniqueId();
             }
 
             Optional<PlayerPunishmentData> data = this.punishmentManager.getSQLManager().getPunishment(uuid, type);

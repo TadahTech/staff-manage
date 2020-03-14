@@ -52,6 +52,26 @@ public class DupeIPManager extends GenericSQLManager<PlayerConnectionInfo> imple
         return CONNECTION_INFO.get(uuid);
     }
 
+    public void getDuplicateIPsForUser(UUID player, Callback<Map<String, PlayerConnectionInfo[]>> callback) {
+        UtilConcurrency.runAsync(() -> {
+            // First we make a multimap with IP as key
+            Multimap<String, PlayerConnectionInfo> byIpClone = ArrayListMultimap.create();
+            PlayerConnectionInfo connectionInfo = this.get(new SavedFieldValue<>(this.getField("uuid"), player));
+
+            if (connectionInfo == null) {
+                UtilConcurrency.runSync(() -> callback.call(Maps.newHashMap()));
+                return;
+            }
+
+            for (PlayerConnectionInfo info : getAll(new SavedFieldValue<>(this.getField("ip"), connectionInfo.getIp()))) {
+                byIpClone.put(info.getIp(), info);
+            }
+
+            // Now we extract the ones that have dupes
+            callbackConnectionMap(callback, byIpClone);
+        });
+    }
+
     public void getDuplicateIPs(Callback<Map<String, PlayerConnectionInfo[]>> callback) {
         UtilConcurrency.runAsync(() -> {
             // First we make a multimap with IP as key
@@ -67,20 +87,24 @@ public class DupeIPManager extends GenericSQLManager<PlayerConnectionInfo> imple
             }
 
             // Now we extract the ones that have dupes
-            Map<String, PlayerConnectionInfo[]> unsorted = Maps.newHashMap();
-            byIpClone.asMap().forEach((ip, collection) -> {
-                if (collection.size() <= 1) { // 1 is really the only thing that will happen here
-                    return;
-                }
-
-                unsorted.put(ip, collection.toArray(new PlayerConnectionInfo[0]));
-            });
-
-            // Gotta do a separate map just because lambda
-            Map<String, PlayerConnectionInfo[]> sorted = sortByValue(unsorted);
-            unsorted.clear(); // Clear it, because why not
-            UtilConcurrency.runSync(() -> callback.call(sorted));
+            callbackConnectionMap(callback, byIpClone);
         });
+    }
+
+    private void callbackConnectionMap(Callback<Map<String, PlayerConnectionInfo[]>> callback, Multimap<String, PlayerConnectionInfo> byIpClone) {
+        Map<String, PlayerConnectionInfo[]> unsorted = Maps.newHashMap();
+        byIpClone.asMap().forEach((ip, collection) -> {
+            if (collection.size() <= 1) { // 1 is really the only thing that will happen here
+                return;
+            }
+
+            unsorted.put(ip, collection.toArray(new PlayerConnectionInfo[0]));
+        });
+
+        // Gotta do a separate map just because lambda
+        Map<String, PlayerConnectionInfo[]> sorted = sortByValue(unsorted);
+        unsorted.clear(); // Clear it, because why not
+        UtilConcurrency.runSync(() -> callback.call(sorted));
     }
 
     private <K, V> Map<K, V> sortByValue(Map<K, V> map) {

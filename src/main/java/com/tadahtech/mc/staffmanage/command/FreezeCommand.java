@@ -14,6 +14,10 @@ public class FreezeCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Player player = (Player) sender;
 
+        if (player.hasPermission("sms.freeze")) {
+            return true;
+        }
+
         if (args.length != 1) {
             player.sendMessage(Colors.RED + "Please enter a target");
             return true;

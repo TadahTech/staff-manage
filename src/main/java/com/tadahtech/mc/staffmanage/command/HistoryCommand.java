@@ -18,7 +18,6 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -48,47 +47,43 @@ public class HistoryCommand implements CommandExecutor {
 
         String targetName = args[0];
         Player target = Bukkit.getPlayer(targetName);
-        UUID uuid;
+        UUID test = UUID.randomUUID();
+        UUID targetUUID;
 
         if (target == null) {
-            OfflinePlayer offlinePlayer;
-
-            String arg = args[0];
-
-            try {
-                offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(arg));
-            } catch (Exception e) {
-                offlinePlayer = Bukkit.getOfflinePlayer(args[0]);
-            }
-
-            if (offlinePlayer == null) {
-                sender.sendMessage(Colors.RED + "Invalid Player!");
-                return true;
-            }
-
-            uuid = offlinePlayer.getUniqueId();
+            targetUUID = test;
         } else {
-            uuid = target.getUniqueId();
+            targetUUID = target.getUniqueId();
         }
 
-        StaffManager.getInstance().getPunishmentManager().getRecordSQLManager().getRecord(uuid, sender.hasPermission("sms.view-removed"), record -> {
-            if (record == null) {
-                sender.sendMessage(Colors.RED + "No records found for " + targetName);
-                return;
+        UUID finalTargetUUID = targetUUID;
+
+        UtilConcurrency.runAsync(() -> {
+            UUID uuid = finalTargetUUID;
+
+            if (uuid == test) {
+                uuid = Bukkit.getOfflinePlayer(args[0]).getUniqueId();
             }
 
-            int page = 1;
-            if (args.length > 1) {
-                String pageRaw = args[1];
-                try {
-                    page = Integer.valueOf(pageRaw);
-                } catch (NumberFormatException ignored) {
-                    sender.sendMessage(Colors.RED + "Please enter a valid page number");
+            StaffManager.getInstance().getPunishmentManager().getRecordSQLManager().getRecord(uuid, sender.hasPermission("sms.view-removed"), record -> {
+                if (record == null) {
+                    sender.sendMessage(Colors.RED + "No records found for " + targetName);
                     return;
                 }
-            }
 
-            this.print(record, targetName, (Player) sender, page);
+                int page = 1;
+                if (args.length > 1) {
+                    String pageRaw = args[1];
+                    try {
+                        page = Integer.parseInt(pageRaw);
+                    } catch (NumberFormatException ignored) {
+                        sender.sendMessage(Colors.RED + "Please enter a valid page number");
+                        return;
+                    }
+                }
+
+                this.print(record, targetName, (Player) sender, page);
+            });
         });
         return true;
     }

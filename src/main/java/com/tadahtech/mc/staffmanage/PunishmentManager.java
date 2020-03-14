@@ -92,7 +92,7 @@ public class PunishmentManager {
 
         PunishmentLength length = this.lengthManager.getLength(data);
 
-        if (!sender.hasPermission("staffmanager." + data.getType().getLabel())) {
+        if (!sender.hasPermission("sms." + data.getType().getLabel())) {
             sender.sendMessage(Colors.RED + "You cannot execute a " + data.getType() + "! Please get a higher ranked staff member.");
             return;
         }
@@ -146,6 +146,15 @@ public class PunishmentManager {
         }
 
         sender.sendMessage(getStaff(data));
+    }
+
+    public void punishConsole(PlayerPunishmentData data) {
+        RecordEntry entry = new RecordEntry(data);
+        this.getRecordSQLManager().saveEntry(entry);
+
+        broadcast(data);
+        this.sqlManager.save(data);
+        this.builderManager.cleanup(data.getInitiatorUUID());
     }
 
     public void removePunishment(PlayerPunishmentData punishment) {

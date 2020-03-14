@@ -2,7 +2,9 @@ package com.tadahtech.mc.staffmanage.command;
 
 import com.tadahtech.mc.staffmanage.PunishmentManager;
 import com.tadahtech.mc.staffmanage.StaffManager;
-import com.tadahtech.mc.staffmanage.gui.category.PunishmentCategoryMenu;
+import com.tadahtech.mc.staffmanage.player.PlayerPunishmentData;
+import com.tadahtech.mc.staffmanage.punishments.PunishmentCategory;
+import com.tadahtech.mc.staffmanage.punishments.PunishmentType;
 import com.tadahtech.mc.staffmanage.punishments.builder.PunishmentBuilder;
 import com.tadahtech.mc.staffmanage.util.Colors;
 import com.tadahtech.mc.staffmanage.util.UtilConcurrency;
@@ -11,28 +13,22 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public class PunishCommand implements CommandExecutor {
+public class PunishServerCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.hasPermission("sms.punish")) {
-            sender.sendMessage(Colors.RED + "You cannot run this command!");
+        if (!(sender instanceof ConsoleCommandSender) && !sender.hasPermission("sms.serverpunish")) {
+            sender.sendMessage(Colors.RED + "You cannot do this!");
             return true;
         }
 
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(Colors.RED + "Only players can enter into the UI.");
-            return true;
-        }
-
-        Player player = (Player) sender;
-
-        if (args.length != 1) {
-            player.sendMessage(Colors.RED + "Please enter a target");
+        if (args.length != 4) {
+            sender.sendMessage(Colors.RED + "Incorrect usage: /serverpunish <player> <type> <category> <subType>");
             return true;
         }
 
@@ -63,16 +59,24 @@ public class PunishCommand implements CommandExecutor {
                 name = offlinePlayer.getName();
             }
 
-            UUID targetUuid = uuid;
-            String targetName = name;
+            PunishmentType type = PunishmentType.getByName(args[1]);
+            UUID initiatorUUID = StaffManager.CONSOLE_UUID;
+            String initiatorName = "Console";
 
-            UtilConcurrency.runSync(() -> {
-                PunishmentManager manager = StaffManager.getInstance().getPunishmentManager();
-                PunishmentBuilder builder = manager.getBuilderManager().makeBuilder(player, targetUuid, targetName);
+            PunishmentManager punishmentManager = StaffManager.getInstance().getPunishmentManager();
+            PunishmentCategory category = punishmentManager.getCategory(args[2]);
 
-                new PunishmentCategoryMenu(builder).open(player);
-            });
+            PlayerPunishmentData playerPunishmentData = new PunishmentBuilder(initiatorName, initiatorUUID, name, uuid)
+              .setCategory(category)
+              .setData(category.getDataFor(args[3]))
+              .setType(type)
+              .build();
+
+            punishmentManager.punishConsole(playerPunishmentData);
+
+            sender.sendMessage(Colors.RED + "Punished " + name + " for " + category.getName() + " - " + playerPunishmentData.getSubTypePretty());
         });
+
         return true;
     }
 }

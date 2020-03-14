@@ -6,6 +6,7 @@ import com.tadahtech.mc.staffmanage.menu.buttons.MenuButton;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentCategory;
 import com.tadahtech.mc.staffmanage.punishments.builder.PunishmentBuilder;
 import com.tadahtech.mc.staffmanage.util.UtilUI;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class PunishmentCategoryMenu extends Menu {
@@ -16,16 +17,21 @@ public class PunishmentCategoryMenu extends Menu {
 
     public PunishmentCategoryMenu(PunishmentBuilder builder) {
         super("Punishments");
-
         this.builder = builder;
-        this.categories = StaffManager.getInstance().getPunishmentManager().getAll().toArray(new PunishmentCategory[0]);
+        this.categories = StaffManager.getInstance().getPunishmentManager().getAll()
+          .stream()
+          .filter(punishmentCategory -> {
+              Player player = Bukkit.getPlayer(builder.getInitiatorUUID());
+              return player.hasPermission("sms.category." + punishmentCategory.getName().toLowerCase());
+          })
+          .toArray(PunishmentCategory[]::new);
         this.size = categories.length;
     }
 
     @Override
     protected MenuButton[] setUp(Player player) {
         int lines = (int) (2 + Math.ceil((double) this.size / 4.0));
-        MenuButton[] buttons = new MenuButton[(9 * lines) > 54 ? 54 : (9 * lines)];
+        MenuButton[] buttons = new MenuButton[Math.min((9 * lines), 54)];
 
         int[] slots = UtilUI.getIndicesFor(this.size, 1, 4, 0);
 

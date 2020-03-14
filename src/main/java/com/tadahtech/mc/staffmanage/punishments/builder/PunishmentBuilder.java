@@ -38,6 +38,13 @@ public class PunishmentBuilder {
         this.playerName = targetName;
     }
 
+    public PunishmentBuilder(String initiatorName, UUID initiatorUUID, String playerName, UUID playerUUID) {
+        this.initiatorName = initiatorName;
+        this.initiatorUUID = initiatorUUID;
+        this.playerName = playerName;
+        this.playerUUID = playerUUID;
+    }
+
     public String getInitiatorName() {
         return initiatorName;
     }
@@ -58,8 +65,9 @@ public class PunishmentBuilder {
         return category;
     }
 
-    public void setCategory(PunishmentCategory category) {
+    public PunishmentBuilder setCategory(PunishmentCategory category) {
         this.category = category;
+        return this;
     }
 
     public PunishmentData getData() {
@@ -78,6 +86,23 @@ public class PunishmentBuilder {
     public PunishmentBuilder setType(PunishmentType type) {
         this.type = type;
         return this;
+    }
+
+    public PlayerPunishmentData build() {
+        PlayerPunishmentData data = new PlayerPunishmentData();
+
+        data.setInitiatorName(this.initiatorName);
+        data.setInitiatorUUID(this.initiatorUUID);
+
+        data.setUuid(this.playerUUID);
+        data.setName(this.playerName);
+
+        data.setTimestamp(new Date());
+
+        data.setCategory(this.category.getName());
+        data.setSubType(this.data.getName());
+        data.setSubTypePretty(ChatColor.stripColor(this.data.getGuiName()));
+        return data;
     }
 
     public void punish() {
