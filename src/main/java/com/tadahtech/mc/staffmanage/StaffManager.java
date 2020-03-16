@@ -13,6 +13,7 @@ import com.tadahtech.mc.staffmanage.dupeip.DupeIPManager;
 import com.tadahtech.mc.staffmanage.listener.StaffChatListener;
 import com.tadahtech.mc.staffmanage.menu.listeners.MenuListener;
 import com.tadahtech.mc.staffmanage.redis.PunishmentsRedisManager;
+import com.tadahtech.mc.staffmanage.util.UtilFreeze;
 import com.tadahtechnologies.redis.RedisConfig;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
@@ -31,6 +32,7 @@ public final class StaffManager extends JavaPlugin {
     private ConfigurationSection messagesSection;
     private PunishmentsRedisManager redisManager;
     private DupeIPManager dupeIPManager;
+    private UtilFreeze utilFreeze;
     private String chatPrefix;
     private boolean debug;
 
@@ -62,6 +64,7 @@ public final class StaffManager extends JavaPlugin {
 
         new MenuListener();
         new StaffChatListener();
+        this.utilFreeze = new UtilFreeze();
 
         getCommand("punish").setExecutor(new PunishCommand());
         getCommand("pardon").setExecutor(new PardonCommand());
@@ -169,5 +172,9 @@ public final class StaffManager extends JavaPlugin {
 
     public DupeIPManager getDupeIPManager() {
         return dupeIPManager;
+    }
+
+    public UtilFreeze getUtilFreeze() {
+        return utilFreeze;
     }
 }

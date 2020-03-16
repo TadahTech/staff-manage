@@ -22,7 +22,8 @@ public class PunishmentCategoryMenu extends Menu {
           .stream()
           .filter(punishmentCategory -> {
               Player player = Bukkit.getPlayer(builder.getInitiatorUUID());
-              return player.hasPermission("sms.category." + punishmentCategory.getName().toLowerCase());
+              String permission = "sms.category." + punishmentCategory.getName().toLowerCase().replace(" ", "_");
+              return player.hasPermission(permission);
           })
           .toArray(PunishmentCategory[]::new);
         this.size = categories.length;
@@ -36,7 +37,7 @@ public class PunishmentCategoryMenu extends Menu {
         int[] slots = UtilUI.getIndicesFor(this.size, 1, 4, 0);
 
         for (int i = 0; i < this.size; i++) {
-            buttons[slots[i]] = new PunishmentCategoryButton(this.categories[i], builder);
+            buttons[slots[i]] = new PunishmentCategoryButton(this, this.categories[i], builder);
         }
 
         return buttons;

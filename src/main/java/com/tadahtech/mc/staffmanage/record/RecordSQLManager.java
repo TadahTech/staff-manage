@@ -42,13 +42,13 @@ public class RecordSQLManager extends GenericSQLManager<RecordEntry> {
             this.getAllAsync(list -> {
                 PlayerRecordData record = new PlayerRecordData(accountId, list);
                 recordCallback.call(record);
-            }, this.createValue("accountId", accountId), this.createValue("removed", false));
+            }, this.createValue("uuid", accountId), this.createValue("removed", false));
             return;
         }
 
         this.getAllAsync(list -> {
             PlayerRecordData record = new PlayerRecordData(accountId, list);
             recordCallback.call(record);
-        }, new SavedFieldValue<>(this.getField("accountId"), accountId));
+        }, new SavedFieldValue<>(this.getField("uuid"), accountId));
     }
 }

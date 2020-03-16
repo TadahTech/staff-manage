@@ -86,6 +86,10 @@ public class PunishmentData {
         for (int t = 0; t < this.types.size(); t++) {
             PunishmentType type = this.types.get(t);
 
+            if (type == null) {
+                continue;
+            }
+
             if (nextType == null) {
                 if (t == 0) {
                     lore.add(Colors.DARK_GRAY + "- " + Colors.GOLD + type.getUiName());

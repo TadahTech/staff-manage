@@ -3,6 +3,7 @@ package com.tadahtech.mc.staffmanage;
 import com.tadahtech.mc.staffmanage.lang.MessageKey;
 
 public enum PunishmentMessage implements MessageKey {
+    GO_BACK("Go back"),
 
     PREFIX("&6&lHydra&f&l(Punishments) &e» &f"),
     GENERAL_LIST_PREVIOUS_PAGE("Previous Page"),

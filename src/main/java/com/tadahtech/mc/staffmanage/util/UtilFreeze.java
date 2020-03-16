@@ -19,13 +19,13 @@ import java.util.UUID;
 
 public class UtilFreeze implements PunishmentListener {
 
-    private static final List<UUID> PLAYERS = new ArrayList<>();
+    private final List<UUID> PLAYERS = new ArrayList<>();
 
     public UtilFreeze() {
         this.startListening();
     }
 
-    public static void freeze(Player player, Location location) {
+    public void freeze(Player player, Location location) {
         player.setWalkSpeed(0f);
 
         if (location != null) {
@@ -35,7 +35,7 @@ public class UtilFreeze implements PunishmentListener {
         PLAYERS.add(player.getUniqueId());
     }
 
-    public static void unfreeze(Player player) {
+    public void unfreeze(Player player) {
         player.setWalkSpeed(0.25f);
         PLAYERS.remove(player.getUniqueId());
     }
@@ -67,9 +67,7 @@ public class UtilFreeze implements PunishmentListener {
 
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
-        if (!PLAYERS.contains(event.getPlayer().getUniqueId())
-          || getDeltaY(event.getFrom(), event.getTo()) == 0.0
-          || !this.isOnGround(event.getPlayer())) {
+        if (!PLAYERS.contains(event.getPlayer().getUniqueId()) || getDeltaY(event.getFrom(), event.getTo()) == 0.0 || !this.isOnGround(event.getPlayer())) {
             return;
         }
 
@@ -89,7 +87,7 @@ public class UtilFreeze implements PunishmentListener {
         return y == (int) y;
     }
 
-    public static List<UUID> getFrozenPlayers() {
+    public List<UUID> getFrozenPlayers() {
         return PLAYERS;
     }
 

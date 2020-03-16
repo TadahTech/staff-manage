@@ -1,7 +1,8 @@
 package com.tadahtech.mc.staffmanage.gui.subCat;
 
-import com.tadahtech.mc.staffmanage.StaffManager;
+import com.tadahtech.mc.staffmanage.gui.category.PunishmentCategoryMenu;
 import com.tadahtech.mc.staffmanage.menu.Menu;
+import com.tadahtech.mc.staffmanage.menu.buttons.BackButton;
 import com.tadahtech.mc.staffmanage.menu.buttons.MenuButton;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentCategory;
 import com.tadahtech.mc.staffmanage.punishments.PunishmentData;
@@ -11,12 +12,14 @@ import org.bukkit.entity.Player;
 
 public class PunishmentSubTypeMenu extends Menu {
 
+    private PunishmentCategoryMenu menu;
     private final int size;
     private PunishmentData[] punishmentData;
     private PunishmentBuilder builder;
 
-    public PunishmentSubTypeMenu(PunishmentCategory category, PunishmentBuilder builder) {
+    public PunishmentSubTypeMenu(PunishmentCategoryMenu menu, PunishmentCategory category, PunishmentBuilder builder) {
         super(category.getName());
+        this.menu = menu;
         this.builder = builder;
         this.punishmentData = category.getPunishments().values().toArray(new PunishmentData[0]);
         this.size = this.punishmentData.length;
@@ -25,7 +28,9 @@ public class PunishmentSubTypeMenu extends Menu {
     @Override
     protected MenuButton[] setUp(Player player) {
         int lines = (int) (2 + Math.ceil((double) this.size / 4.0));
-        MenuButton[] buttons = new MenuButton[(9 * lines) > 54 ? 54 : (9 * lines)];
+        MenuButton[] buttons = new MenuButton[Math.min((9 * lines), 54)];
+
+        buttons[0] = new BackButton(player, menu);
 
         int[] slots = UtilUI.getIndicesFor(this.size, 1, 4, 0);
 
@@ -34,10 +39,5 @@ public class PunishmentSubTypeMenu extends Menu {
         }
 
         return buttons;
-    }
-
-    @Override
-    public void close(Player player) {
-        StaffManager.getInstance().getPunishmentManager().getBuilderManager().cleanup(player.getUniqueId());
     }
 }

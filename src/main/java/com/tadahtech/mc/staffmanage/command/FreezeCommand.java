@@ -1,5 +1,6 @@
 package com.tadahtech.mc.staffmanage.command;
 
+import com.tadahtech.mc.staffmanage.StaffManager;
 import com.tadahtech.mc.staffmanage.util.Colors;
 import com.tadahtech.mc.staffmanage.util.UtilFreeze;
 import org.bukkit.Bukkit;
@@ -14,7 +15,9 @@ public class FreezeCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Player player = (Player) sender;
 
-        if (player.hasPermission("sms.freeze")) {
+        UtilFreeze freeze = StaffManager.getInstance().getUtilFreeze();
+
+        if (!player.hasPermission("sms.freeze")) {
             return true;
         }
 
@@ -30,13 +33,13 @@ public class FreezeCommand implements CommandExecutor {
             return true;
         }
 
-        if (UtilFreeze.getFrozenPlayers().contains(target.getUniqueId())) {
-            UtilFreeze.unfreeze(target);
+        if (freeze.getFrozenPlayers().contains(target.getUniqueId())) {
+            freeze.unfreeze(target);
             player.sendMessage(Colors.GREEN + "Unfroze " + target.getName());
         } else {
             player.sendMessage(Colors.GOLD + "Froze " + target.getName());
             player.sendMessage(Colors.GRAY + "Run /freeze " + target.getName() + " to unfreeze the player.");
-            UtilFreeze.freeze(target, target.getLocation());
+            freeze.freeze(target, target.getLocation());
         }
 
         return true;
