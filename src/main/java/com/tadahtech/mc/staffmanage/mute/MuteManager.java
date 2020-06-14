@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public class MuteManager {
 
-    private Map<UUID, PlayerPunishmentData> mutes;
+    private final Map<UUID, PlayerPunishmentData> mutes;
 
     public MuteManager() {
         this.mutes = Maps.newHashMap();

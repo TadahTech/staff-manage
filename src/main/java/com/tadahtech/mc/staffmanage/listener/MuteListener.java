@@ -64,7 +64,6 @@ public class MuteListener implements PunishmentListener {
         if (mute.isTemporary() && mute.isExpired()) {
             this.punishmentManager.removePunishment(mute);
             this.muteManager.unmute(player);
-            return;
         }
 
         String message = this.punishmentManager.getMessage(mute);

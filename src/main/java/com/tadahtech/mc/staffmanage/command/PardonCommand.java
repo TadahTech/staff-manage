@@ -25,10 +25,10 @@ public class PardonCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.hasPermission("sms.pardon")) {
-            sender.sendMessage(Colors.RED + "You cannot run this command!");
-            return true;
-        }
+            if (!sender.hasPermission("sms.pardon")) {
+                sender.sendMessage(Colors.RED + "You cannot run this command!");
+                return true;
+            }
 
         if (args.length != 2) {
             sender.sendMessage(Colors.RED + "Please enter a target and type");

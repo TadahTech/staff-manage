@@ -31,7 +31,7 @@ import java.util.UUID;
 public class HistoryCommand implements CommandExecutor {
 
     private static final int PER_PAGE = 5;
-    private static final String COMMAND_FORMAT = "/record view %s";
+    private static final String COMMAND_FORMAT = "/phistory %s %s";
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -125,18 +125,17 @@ public class HistoryCommand implements CommandExecutor {
             boolean hasNextPage = page < (pages - 1);
             boolean hasPrevPage = page > 0;
 
-            String commandFormat = String.format(COMMAND_FORMAT, target) + " %s";
-            player.spigot().sendMessage(createPageBar(player, page + 1, commandFormat, hasNextPage, hasPrevPage));
+            player.spigot().sendMessage(createPageBar(player, page + 1, target, hasNextPage, hasPrevPage));
         });
     }
 
-    private BaseComponent[] createPageBar(Player player, int currentPage, String commandFormat, boolean hasNextPage, boolean hasPrevPage) {
+    private BaseComponent[] createPageBar(Player player, int currentPage, String target, boolean hasNextPage, boolean hasPrevPage) {
         String actionMsg = "";
         List<BaseComponent> components = Lists.newArrayList();
 
         if (hasPrevPage) {
             String prevPage = ChatColor.DARK_GRAY + " \u00ab " + new RegularMessage(PunishmentMessage.GENERAL_LIST_PREVIOUS_PAGE).toString(player) + " ";
-            String prevCommand = String.format(commandFormat, currentPage - 1);
+            String prevCommand = String.format(COMMAND_FORMAT, target, currentPage - 1);
             String prevHover = new RegularMessage(PunishmentMessage.GENERAL_LIST_CLICK_TO_PREV).toString(player);
 
             actionMsg += prevPage;
@@ -161,7 +160,7 @@ public class HistoryCommand implements CommandExecutor {
             }
 
             String nextPage = " " + new RegularMessage(PunishmentMessage.GENERAL_LIST_NEXT_PAGE).toString(player) + ChatColor.DARK_GRAY + " \u00bb ";
-            String nextCommand = String.format(commandFormat, currentPage + 1);
+            String nextCommand = String.format(COMMAND_FORMAT, target, currentPage + 1);
             String nextHover = new RegularMessage(PunishmentMessage.GENERAL_LIST_CLICK_TO_NEXT).toString(player);
 
             actionMsg += nextPage;

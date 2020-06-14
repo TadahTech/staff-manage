@@ -58,7 +58,15 @@ public class RecordEntry implements Savable {
     }
 
     public RecordEntry(PlayerPunishmentData data) {
-        this(data.getUuid(), data.getName(), data.getType().getRecord(), data.getCategory(), data.getSubTypePretty(), data.getInitiatorName(), data.getInitiatorUUID(), new Date(), data.getExpiry());
+        this(data.getUuid(),
+          data.getName(),
+          data.getType().getRecord(),
+          data.getCategory(),
+          data.getSubTypePretty(),
+          data.getInitiatorName(),
+          data.getInitiatorUUID(),
+          new Date(),
+          data.getExpiry());
     }
 
     public RecordEntry(UUID uuid, String name, RecordEntryType type, String category, String subType, String initiatorName, UUID initiatorUUID, Date timestamp, Date expiry) {

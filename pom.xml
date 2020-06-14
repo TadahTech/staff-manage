@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.tadahtech.mc</groupId>
-    <artifactId>StaffManager</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>staff-manager</artifactId>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
 
     <name>StaffManager</name>
@@ -17,6 +17,7 @@
     </properties>
 
     <build>
+        <finalName>${project.artifactId}-${project.version}</finalName>
         <defaultGoal>clean package</defaultGoal>
         <plugins>
             <plugin>
